@@ -10,11 +10,11 @@ class BSHAssignment extends SimpleNode implements ParserConstants {
     public Object eval(CallStack callstack, Interpreter interpreter) throws EvalError {
         BSHPrimaryExpression lhsNode = (BSHPrimaryExpression) jjtGetChild(0);
 
-        if (lhsNode == null) throw new InterpreterError("Error, null LHSnode");
+        if (lhsNode == null) throw new InterpreterError("错误, 左节点为null");
 
         boolean strictJava = interpreter.getStrictJava();
         LHS lhs = lhsNode.toLHS(callstack, interpreter);
-        if (lhs == null) throw new InterpreterError("Error, null LHS");
+        if (lhs == null) throw new InterpreterError("错误, 左值为空");
 
         // For operator-assign operations save the lhs value before evaluating
         // the rhs.  This is correct Java behavior for postfix operations
@@ -37,7 +37,7 @@ class BSHAssignment extends SimpleNode implements ParserConstants {
         // else
         rhs = rhsNode.eval(callstack, interpreter);
 
-        if (rhs == Primitive.VOID) throw new EvalError("Void assignment.", this, callstack);
+        if (rhs == Primitive.VOID) throw new EvalError("不能声明为未定义.", this, callstack);
 
         try {
             switch (operator) {
@@ -83,7 +83,7 @@ class BSHAssignment extends SimpleNode implements ParserConstants {
                     return lhs.assign(operation(lhsValue, rhs, RUNSIGNEDSHIFT), strictJava);
 
                 default:
-                    throw new InterpreterError("unimplemented operator in assignment BSH");
+                    throw new InterpreterError("BSH中未实现的声明操作符");
             }
         } catch (UtilEvalError e) {
             throw e.toEvalError(this, callstack);
@@ -98,16 +98,16 @@ class BSHAssignment extends SimpleNode implements ParserConstants {
         	(or should we map them to the empty string?)
         */
         if (lhs instanceof String && rhs != Primitive.VOID) {
-            if (kind != PLUS) throw new UtilEvalError("Use of non + operator with String LHS");
+            if (kind != PLUS) throw new UtilEvalError("左值中对String使用了非+的操作符");
 
             return (String) lhs + rhs;
         }
 
         if (lhs instanceof Primitive || rhs instanceof Primitive)
             if (lhs == Primitive.VOID || rhs == Primitive.VOID)
-                throw new UtilEvalError("Illegal use of undefined object or 'void' literal");
+                throw new UtilEvalError("对未定义对象或void字面的非法使用");
             else if (lhs == Primitive.NULL || rhs == Primitive.NULL)
-                throw new UtilEvalError("Illegal use of null object or 'null' literal");
+                throw new UtilEvalError("对空对象或'null'字面的非法使用");
 
         if ((lhs instanceof Boolean
                         || lhs instanceof Character
@@ -121,11 +121,6 @@ class BSHAssignment extends SimpleNode implements ParserConstants {
         }
 
         throw new UtilEvalError(
-                "Non primitive value in operator: "
-                        + lhs.getClass()
-                        + " "
-                        + tokenImage[kind]
-                        + " "
-                        + rhs.getClass());
+                "操作符中非原生类型: " + lhs.getClass() + " " + tokenImage[kind] + " " + rhs.getClass());
     }
 }

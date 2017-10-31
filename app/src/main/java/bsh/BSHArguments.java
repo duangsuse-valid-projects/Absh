@@ -28,9 +28,7 @@ class BSHArguments extends SimpleNode {
             args[i] = ((SimpleNode) jjtGetChild(i)).eval(callstack, interpreter);
             if (args[i] == Primitive.VOID)
                 throw new EvalError(
-                        "Undefined argument: " + ((SimpleNode) jjtGetChild(i)).getText(),
-                        this,
-                        callstack);
+                        "未定义的参数: " + ((SimpleNode) jjtGetChild(i)).getText(), this, callstack);
         }
 
         return args;

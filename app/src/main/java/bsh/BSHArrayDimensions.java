@@ -29,7 +29,7 @@ class BSHArrayDimensions extends SimpleNode {
     }
 
     public Object eval(Class type, CallStack callstack, Interpreter interpreter) throws EvalError {
-        if (Interpreter.DEBUG) Interpreter.debug("array base type = " + type);
+        if (Interpreter.DEBUG) Interpreter.debug("数组基类型 = " + type);
         baseType = type;
         return eval(callstack, interpreter);
     }
@@ -55,8 +55,7 @@ class BSHArrayDimensions extends SimpleNode {
         	e.g. int [][] { 1, 2 };
         */
         if (child instanceof BSHArrayInitializer) {
-            if (baseType == null)
-                throw new EvalError("Internal Array Eval err:  unknown base type", this, callstack);
+            if (baseType == null) throw new EvalError("内部数组模拟错误: 不知道基类型", this, callstack);
 
             Object initValue =
                     ((BSHArrayInitializer) child)
@@ -70,11 +69,11 @@ class BSHArrayDimensions extends SimpleNode {
             // number specified (syntax uses the undefined ones here)
             if (definedDimensions.length != numUndefinedDims)
                 throw new EvalError(
-                        "Incompatible initializer. Allocation calls for a "
+                        "不兼容的初始化者. 为一个 "
                                 + numUndefinedDims
-                                + " dimensional array, but initializer is a "
+                                + " 维数组执行分配, 但是初始化者是 "
                                 + actualDimensions
-                                + " dimensional array",
+                                + " 维数组",
                         this,
                         callstack);
 
@@ -96,10 +95,7 @@ class BSHArrayDimensions extends SimpleNode {
                     Object length = ((SimpleNode) jjtGetChild(i)).eval(callstack, interpreter);
                     definedDimensions[i] = ((Primitive) length).intValue();
                 } catch (Exception e) {
-                    throw new EvalError(
-                            "Array index: " + i + " does not evaluate to an integer",
-                            this,
-                            callstack);
+                    throw new EvalError("数组索引: " + i + " 不被模拟为一个整形数", this, callstack);
                 }
             }
         }

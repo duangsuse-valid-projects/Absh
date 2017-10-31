@@ -86,7 +86,7 @@ public class CollectionIterator implements bsh.BshIterator {
                     it = (Iterator) m.invoke(iterateOverMe, new Object[0]);
                 } catch (Exception e) {
                     throw new InterpreterError(
-                            "在java.lang.Iterable实力上调用 " + "\"iterator()\" 方法时失败: " + e);
+                            "在java.lang.Iterable实例上调用 " + "\"iterator()\" 方法时失败: " + e);
                 }
             }
         } catch (ClassNotFoundException cnfe) {

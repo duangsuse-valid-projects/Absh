@@ -40,15 +40,11 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
         callstack.swap(eachNameSpace);
         final Object iteratee = expression.eval(callstack, interpreter);
         if (iteratee == Primitive.NULL) {
-            throw new EvalError(
-                    "The collection, array, map, iterator, or "
-                            + "enumeration portion of a for statement cannot be null.",
-                    this,
-                    callstack);
+            throw new EvalError("一个for语句的集合, 数组, 映射, 送代器或枚举部分不能是空的.", this, callstack);
         }
         CollectionManager cm = CollectionManager.getCollectionManager();
         if (!cm.isBshIterable(iteratee)) {
-            throw new EvalError("Can't iterate over type: " + iteratee.getClass(), this, callstack);
+            throw new EvalError("不能在类型 " + iteratee.getClass() + "上完成送代", this, callstack);
         }
         BshIterator iterator = cm.getBshIterator(iteratee);
         Object returnControl = Primitive.VOID;
@@ -68,7 +64,7 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
                     eachNameSpace.setVariable(varName, value, false);
                 }
             } catch (UtilEvalError e) {
-                throw e.toEvalError("for loop iterator variable:" + varName, this, callstack);
+                throw e.toEvalError("for循环的送代器变量:" + varName, this, callstack);
             }
             boolean breakout = false; // switch eats a multi-level break here?
             if (statement != null) {

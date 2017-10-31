@@ -729,7 +729,7 @@ public class ClassGeneratorUtil implements Constants {
                 type = "java/lang/Character";
                 meth = "charValue";
             } else {
-                    /*if (returnType.equals("S") )*/
+                /*if (returnType.equals("S") )*/
                 type = "java/lang/Short";
                 meth = "shortValue";
             }

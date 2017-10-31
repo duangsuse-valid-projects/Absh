@@ -49,12 +49,10 @@ class BSHAmbiguousName extends SimpleNode {
     	We disallow a generic eval( ).
     */
     public Object eval(CallStack callstack, Interpreter interpreter) throws EvalError {
-        throw new InterpreterError(
-                "Don't know how to eval an ambiguous name!"
-                        + "  Use toObject() if you want an object.");
+        throw new InterpreterError("不知道如何模拟含糊的名字! 如果想要一个对象的话调用 toObject() 方法.");
     }
 
     public String toString() {
-        return "AmbigousName: " + text;
+        return "模糊的名字: " + text;
     }
 }

@@ -8,7 +8,7 @@ class BSHArrayInitializer extends SimpleNode {
     }
 
     public Object eval(CallStack callstack, Interpreter interpreter) throws EvalError {
-        throw new EvalError("Array initializer has no base type.", this, callstack);
+        throw new EvalError("数组初始化者没有基类型.", this, callstack);
     }
 
     /**
@@ -33,16 +33,14 @@ class BSHArrayInitializer extends SimpleNode {
             SimpleNode node = (SimpleNode) jjtGetChild(i);
             Object currentInitializer;
             if (node instanceof BSHArrayInitializer) {
-                if (dimensions < 2)
-                    throw new EvalError(
-                            "Invalid Location for Intializer, position: " + i, this, callstack);
+                if (dimensions < 2) throw new EvalError("初始化者位置无效, 于位置: " + i, this, callstack);
                 currentInitializer =
                         ((BSHArrayInitializer) node)
                                 .eval(baseType, dimensions - 1, callstack, interpreter);
             } else currentInitializer = node.eval(callstack, interpreter);
 
             if (currentInitializer == Primitive.VOID)
-                throw new EvalError("Void in array initializer, position" + i, this, callstack);
+                throw new EvalError("初始化者中有Void, 于位置: " + i, this, callstack);
 
             // Determine if any conversion is necessary on the initializers.
             //
@@ -60,7 +58,7 @@ class BSHArrayInitializer extends SimpleNode {
                 try {
                     value = Types.castObject(currentInitializer, baseType, Types.CAST);
                 } catch (UtilEvalError e) {
-                    throw e.toEvalError("Error in array initializer", this, callstack);
+                    throw e.toEvalError("数组初始化者中发生错误", this, callstack);
                 }
                 // unwrap any primitive, map voids to null, etc.
                 value = Primitive.unwrap(value);
@@ -70,10 +68,10 @@ class BSHArrayInitializer extends SimpleNode {
             try {
                 Array.set(initializers, i, value);
             } catch (IllegalArgumentException e) {
-                Interpreter.debug("illegal arg" + e);
+                Interpreter.debug("参数非法" + e);
                 throwTypeError(baseType, currentInitializer, i, callstack);
             } catch (ArrayStoreException e) { // I think this can happen
-                Interpreter.debug("arraystore" + e);
+                Interpreter.debug("数组储存" + e);
                 throwTypeError(baseType, currentInitializer, i, callstack);
             }
         }
@@ -89,12 +87,7 @@ class BSHArrayInitializer extends SimpleNode {
         else rhsType = Reflect.normalizeClassName(initializer.getClass());
 
         throw new EvalError(
-                "Incompatible type: "
-                        + rhsType
-                        + " in initializer of array type: "
-                        + baseType
-                        + " at position: "
-                        + argNum,
+                "不兼容的类型: " + rhsType + " 出现在初始化者中: " + baseType + " 于位置: " + argNum,
                 this,
                 callstack);
     }

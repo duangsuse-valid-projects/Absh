@@ -120,9 +120,7 @@ public class BshClassManager {
      * @return the class or null
      */
     public Class classForName(String name) {
-        if (isClassBeingDefined(name))
-            throw new InterpreterError(
-                    "Attempting to load class in the process of being defined: " + name);
+        if (isClassBeingDefined(name)) throw new InterpreterError("尝试在类将被定义时加载类型: " + name);
 
         Class clas = null;
         try {
@@ -144,7 +142,7 @@ public class BshClassManager {
         if (in == null) return null;
 
         try {
-            System.out.println("Loading class from source file: " + fileName);
+            System.out.println("从源文件中加载类: " + fileName);
             declaringInterpreter.eval(new InputStreamReader(in));
         } catch (EvalError e) {
             // ignore
@@ -153,7 +151,7 @@ public class BshClassManager {
         try {
             return plainClassForName(name);
         } catch (ClassNotFoundException e) {
-            System.err.println("Class not found in source file: " + name);
+            System.err.println("源文件中找不到类: " + name);
             return null;
         }
     }
@@ -263,8 +261,7 @@ public class BshClassManager {
      * fast lookup in the general case where either will do.
      */
     public void cacheResolvedMethod(Class clas, Class[] types, Method method) {
-        if (Interpreter.DEBUG)
-            Interpreter.debug("cacheResolvedMethod putting: " + clas + " " + method);
+        if (Interpreter.DEBUG) Interpreter.debug("cacheResolvedMethod 在放置: " + clas + " " + method);
 
         SignatureKey sk = new SignatureKey(clas, method.getName(), types);
         if (Modifier.isStatic(method.getModifiers())) resolvedStaticMethods.put(sk, method);
@@ -288,8 +285,8 @@ public class BshClassManager {
 
         if (Interpreter.DEBUG) {
             if (method == null)
-                Interpreter.debug("getResolvedMethod cache MISS: " + clas + " - " + methodName);
-            else Interpreter.debug("getResolvedMethod cache HIT: " + clas + " - " + method);
+                Interpreter.debug("getResolvedMethod 缓存偏差: " + clas + " - " + methodName);
+            else Interpreter.debug("getResolvedMethod 缓存命中: " + clas + " - " + method);
         }
         return method;
     }
@@ -388,7 +385,7 @@ public class BshClassManager {
     public void removeListener(Listener l) {}
 
     public void dump(PrintWriter pw) {
-        pw.println("BshClassManager: no class manager.");
+        pw.println("BshClassManager: 无类管理器.");
     }
 
     /**
@@ -411,12 +408,12 @@ public class BshClassManager {
         String cur = (String) definingClassesBaseNames.get(baseName);
         if (cur != null)
             throw new InterpreterError(
-                    "Defining class problem: "
+                    "类定义问题: "
                             + className
-                            + ": BeanShell cannot yet simultaneously define two or more "
-                            + "dependent classes of the same name.  Attempt to define: "
+                            + ": BeanShell 现在还不能同时定义两个(以上) "
+                            + "有相同名字的独立类  尝试定义: "
                             + className
-                            + " while defining: "
+                            + " 在定义时: "
                             + cur);
         definingClasses.put(className, NOVALUE);
         definingClassesBaseNames.put(baseName, className);
@@ -447,8 +444,7 @@ public class BshClassManager {
     	reloading of the generated classes.
     */
     public Class defineClass(String name, byte[] code) {
-        throw new InterpreterError(
-                "Can't create class (" + name + ") without class manager package.");
+        throw new InterpreterError("如果没有class manager包就无法定义类 (" + name + ") . 尝试重新编译.");
         /*
         	Old implementation injected classes into the parent classloader.
         	This was incorrect behavior for several reasons.  The biggest problem
@@ -480,15 +476,11 @@ public class BshClassManager {
 
     /** Annotate the NoClassDefFoundError with some info about the class we were trying to load. */
     protected static Error noClassDefFound(String className, Error e) {
-        return new NoClassDefFoundError(
-                "A class required by class: "
-                        + className
-                        + " could not be loaded:\n"
-                        + e.toString());
+        return new NoClassDefFoundError("一个被: " + className + " 需要的类不能被加载:\n" + e.toString());
     }
 
     protected static UtilEvalError cmUnavailable() {
-        return new Capabilities.Unavailable("ClassLoading features unavailable.");
+        return new Capabilities.Unavailable("类加载特性现在不可用.");
     }
 
     public static interface Listener {

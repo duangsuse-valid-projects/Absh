@@ -145,18 +145,11 @@ class BSHBinaryExpression extends SimpleNode implements ParserConstants {
             default:
                 if (lhs instanceof Primitive || rhs instanceof Primitive)
                     if (lhs == Primitive.VOID || rhs == Primitive.VOID)
-                        throw new EvalError(
-                                "illegal use of undefined variable, class, or 'void' literal",
-                                this,
-                                callstack);
+                        throw new EvalError("对未定义变量, 类或'void'字面的非法使用", this, callstack);
                     else if (lhs == Primitive.NULL || rhs == Primitive.NULL)
-                        throw new EvalError(
-                                "illegal use of null value or 'null' literal", this, callstack);
+                        throw new EvalError("对空值或'null'字面的非法使用", this, callstack);
 
-                throw new EvalError(
-                        "Operator: '" + tokenImage[kind] + "' inappropriate for objects",
-                        this,
-                        callstack);
+                throw new EvalError("操作符: '" + tokenImage[kind] + "' 不适于对象", this, callstack);
         }
     }
 

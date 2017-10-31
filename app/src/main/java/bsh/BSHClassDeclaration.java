@@ -37,8 +37,7 @@ class BSHClassDeclaration extends SimpleNode {
             BSHAmbiguousName node = (BSHAmbiguousName) jjtGetChild(child++);
             interfaces[i] = node.toClass(callstack, interpreter);
             if (!interfaces[i].isInterface())
-                throw new EvalError(
-                        "Type: " + node.text + " is not an interface!", this, callstack);
+                throw new EvalError("类型: " + node.text + " 不是一个接口!", this, callstack);
         }
 
         BSHBlock block;
@@ -63,6 +62,6 @@ class BSHClassDeclaration extends SimpleNode {
     }
 
     public String toString() {
-        return "ClassDeclaration: " + name;
+        return "类声明: " + name;
     }
 }

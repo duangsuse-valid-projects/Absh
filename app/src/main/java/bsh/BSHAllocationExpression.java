@@ -40,7 +40,7 @@ class BSHAllocationExpression extends SimpleNode {
         NameSpace namespace = callstack.top();
 
         Object[] args = argumentsNode.getArguments(callstack, interpreter);
-        if (args == null) throw new EvalError("Null args in new.", this, callstack);
+        if (args == null) throw new EvalError("new 获得了空参数.", this, callstack);
 
         // Look for scripted class object
         Object obj = nameNode.toObject(callstack, interpreter, false /* force class*/);
@@ -51,7 +51,7 @@ class BSHAllocationExpression extends SimpleNode {
 
         Class type = null;
         if (obj instanceof ClassIdentifier) type = ((ClassIdentifier) obj).getTargetClass();
-        else throw new EvalError("Unknown class: " + nameNode.text, this, callstack);
+        else throw new EvalError("未知类: " + nameNode.text, this, callstack);
 
         // Is an inner class style object allocation
         boolean hasBody = jjtGetNumChildren() > 2;
@@ -70,12 +70,11 @@ class BSHAllocationExpression extends SimpleNode {
         try {
             obj = Reflect.constructObject(type, args);
         } catch (ReflectError e) {
-            throw new EvalError("Constructor error: " + e.getMessage(), this, callstack);
+            throw new EvalError("架构器错误: " + e.getMessage(), this, callstack);
         } catch (InvocationTargetException e) {
             // No need to wrap this debug
-            Interpreter.debug("The constructor threw an exception:\n\t" + e.getTargetException());
-            throw new TargetError(
-                    "Object constructor", e.getTargetException(), this, callstack, true);
+            Interpreter.debug("架构器抛出了异常:\n\t" + e.getTargetException());
+            throw new TargetError("对象架构器", e.getTargetException(), this, callstack, true);
         }
 
         String className = type.getName();
@@ -143,7 +142,7 @@ class BSHAllocationExpression extends SimpleNode {
             if (e instanceof InvocationTargetException)
                 e = (Exception) ((InvocationTargetException) e).getTargetException();
             if (Interpreter.DEBUG) e.printStackTrace();
-            throw new EvalError("Error constructing inner class instance: " + e, this, callstack);
+            throw new EvalError("架构内联实例化对象时出错: " + e, this, callstack);
         }
     }
 
@@ -174,8 +173,7 @@ class BSHAllocationExpression extends SimpleNode {
         NameSpace namespace = callstack.top();
         Class type = nameNode.toClass(callstack, interpreter);
         if (type == null)
-            throw new EvalError(
-                    "Class " + nameNode.getName(namespace) + " not found.", this, callstack);
+            throw new EvalError("找不到类 " + nameNode.getName(namespace), this, callstack);
 
         return arrayAllocation(dimensionsNode, type, callstack, interpreter);
     }
@@ -242,8 +240,7 @@ class BSHAllocationExpression extends SimpleNode {
         } catch (NegativeArraySizeException e1) {
             throw new TargetError(e1, this, callstack);
         } catch (Exception e) {
-            throw new EvalError(
-                    "Can't construct primitive array: " + e.getMessage(), this, callstack);
+            throw new EvalError("无法架构原生数组: " + e.getMessage(), this, callstack);
         }
     }
 }

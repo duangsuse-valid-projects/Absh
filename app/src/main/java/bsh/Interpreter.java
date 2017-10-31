@@ -591,7 +591,7 @@ public class Interpreter implements Runnable, ConsoleInterface, Serializable {
     public Object eval(String statements, NameSpace nameSpace) throws EvalError {
 
         String s = (statements.endsWith(";") ? statements : statements + ";");
-        return eval(new StringReader(s), nameSpace, "(对 ``" + showEvalString(s) + "'' 的内连模拟)");
+        return eval(new StringReader(s), nameSpace, "(对 ``" + showEvalString(s) + "'' 的内联模拟)");
     }
 
     private String showEvalString(String s) {
