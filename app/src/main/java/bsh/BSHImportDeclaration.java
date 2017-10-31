@@ -23,8 +23,7 @@ class BSHImportDeclaration extends SimpleNode {
                     Class clas =
                             ((BSHAmbiguousName) jjtGetChild(0)).toClass(callstack, interpreter);
                     namespace.importStatic(clas);
-                } else
-                    throw new EvalError("static field imports not supported yet", this, callstack);
+                } else throw new EvalError("还不支持导入静态字段", this, callstack);
             } else {
                 String name = ((BSHAmbiguousName) jjtGetChild(0)).text;
                 if (importPackage) namespace.importPackage(name);

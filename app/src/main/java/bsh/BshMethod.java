@@ -185,20 +185,16 @@ public class BshMethod implements java.io.Serializable {
             throws EvalError {
         if (argValues != null)
             for (int i = 0; i < argValues.length; i++)
-                if (argValues[i] == null) throw new Error("HERE!");
+                if (argValues[i] == null) throw new Error("在这里!");
 
         if (javaMethod != null)
             try {
                 return Reflect.invokeMethod(javaMethod, javaObject, argValues);
             } catch (ReflectError e) {
-                throw new EvalError("Error invoking Java method: " + e, callerInfo, callstack);
+                throw new EvalError("调用Java方法时出错: " + e, callerInfo, callstack);
             } catch (InvocationTargetException e2) {
                 throw new TargetError(
-                        "Exception invoking imported object method.",
-                        e2,
-                        callerInfo,
-                        callstack,
-                        true /*isNative*/);
+                        "调用导入对象的方法时抛出异常.", e2, callerInfo, callstack, true /*isNative*/);
             }
 
         // is this a syncrhonized method?
@@ -211,7 +207,7 @@ public class BshMethod implements java.io.Serializable {
                 try {
                     lock = declaringNameSpace.getClassInstance();
                 } catch (UtilEvalError e) {
-                    throw new InterpreterError("Can't get class instance for synchronized method.");
+                    throw new InterpreterError("不能获取对于同步方法的类实例.");
                 }
             } else lock = declaringNameSpace.getThis(interpreter); // ???
 
@@ -252,8 +248,7 @@ public class BshMethod implements java.io.Serializable {
             		throw eval error
             	}
             */
-            throw new EvalError(
-                    "Wrong number of arguments for local method: " + name, callerInfo, callstack);
+            throw new EvalError("对本地方法的参数个数不对: " + name, callerInfo, callstack);
         }
 
         // Make the local namespace for the method invocation
@@ -276,11 +271,11 @@ public class BshMethod implements java.io.Serializable {
                             Types.castObject(argValues[i], paramTypes[i], Types.ASSIGNMENT);
                 } catch (UtilEvalError e) {
                     throw new EvalError(
-                            "Invalid argument: "
+                            "无效的参数: "
                                     + "`"
                                     + paramNames[i]
                                     + "'"
-                                    + " for method: "
+                                    + " 于方法: "
                                     + name
                                     + " : "
                                     + e.getMessage(),
@@ -291,8 +286,7 @@ public class BshMethod implements java.io.Serializable {
                     localNameSpace.setTypedVariable(
                             paramNames[i], paramTypes[i], argValues[i], null /*modifiers*/);
                 } catch (UtilEvalError e2) {
-                    throw e2.toEvalError(
-                            "Typed method parameter assignment", callerInfo, callstack);
+                    throw e2.toEvalError("有类型的方法参数声明", callerInfo, callstack);
                 }
             }
             // Set untyped variable
@@ -300,10 +294,7 @@ public class BshMethod implements java.io.Serializable {
                 // getAssignable would catch this for typed param
                 if (argValues[i] == Primitive.VOID)
                     throw new EvalError(
-                            "Undefined variable or class name, parameter: "
-                                    + paramNames[i]
-                                    + " to method: "
-                                    + name,
+                            "未定义变量或类名, 参数: " + paramNames[i] + " 于方法: " + name,
                             callerInfo,
                             callstack);
                 else
@@ -337,17 +328,12 @@ public class BshMethod implements java.io.Serializable {
             else
                 // retControl.returnPoint is the Node of the return statement
                 throw new EvalError(
-                        "'continue' or 'break' in method body",
-                        retControl.returnPoint,
-                        returnStack);
+                        "在方法中出现'continue'或'break'", retControl.returnPoint, returnStack);
 
             // Check for explicit return of value from void method type.
             // retControl.returnPoint is the Node of the return statement
             if (returnType == Void.TYPE && ret != Primitive.VOID)
-                throw new EvalError(
-                        "Cannot return value from void method",
-                        retControl.returnPoint,
-                        returnStack);
+                throw new EvalError("不能从void方法中返回值", retControl.returnPoint, returnStack);
         }
 
         if (returnType != null) {
@@ -364,10 +350,7 @@ public class BshMethod implements java.io.Serializable {
                 // (else it was implicit return? What's the case here?)
                 SimpleNode node = callerInfo;
                 if (retControl != null) node = retControl.returnPoint;
-                throw e.toEvalError(
-                        "Incorrect type returned from method: " + name + e.getMessage(),
-                        node,
-                        callstack);
+                throw e.toEvalError("从方法中返回的类型不对: " + name + e.getMessage(), node, callstack);
             }
         }
 
@@ -379,6 +362,6 @@ public class BshMethod implements java.io.Serializable {
     }
 
     public String toString() {
-        return "Scripted Method: " + StringUtil.methodString(name, getParameterTypes());
+        return "脚本方法: " + StringUtil.methodString(name, getParameterTypes());
     }
 }

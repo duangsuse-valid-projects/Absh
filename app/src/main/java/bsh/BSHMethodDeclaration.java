@@ -111,9 +111,9 @@ class BSHMethodDeclaration extends SimpleNode {
                     // Warning: Null callstack here.  Don't think we need
                     // a stack trace to indicate how we sourced the method.
                     throw new EvalError(
-                            "(Strict Java Mode) Undeclared argument type, parameter: "
+                            "(严格Java) 没有定义参赛类型, 参数: "
                                     + paramsNode.getParamNames()[i]
-                                    + " in method: "
+                                    + " 于方法: "
                                     + name,
                             this,
                             null);
@@ -121,14 +121,11 @@ class BSHMethodDeclaration extends SimpleNode {
             if (returnType == null)
                 // Warning: Null callstack here.  Don't think we need
                 // a stack trace to indicate how we sourced the method.
-                throw new EvalError(
-                        "(Strict Java Mode) Undeclared return type for method: " + name,
-                        this,
-                        null);
+                throw new EvalError("(严格Java) 没有定义方法返回类型: " + name, this, null);
         }
     }
 
     public String toString() {
-        return "MethodDeclaration: " + name;
+        return "方法定义: " + name;
     }
 }

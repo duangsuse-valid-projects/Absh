@@ -21,14 +21,11 @@ class BSHIfStatement extends SimpleNode {
             SimpleNode condExp, CallStack callstack, Interpreter interpreter) throws EvalError {
         Object obj = condExp.eval(callstack, interpreter);
         if (obj instanceof Primitive) {
-            if (obj == Primitive.VOID)
-                throw new EvalError("Condition evaluates to void type", condExp, callstack);
+            if (obj == Primitive.VOID) throw new EvalError("情况参数被模拟为void", condExp, callstack);
             obj = ((Primitive) obj).getValue();
         }
 
         if (obj instanceof Boolean) return ((Boolean) obj).booleanValue();
-        else
-            throw new EvalError(
-                    "Condition must evaluate to a Boolean or boolean.", condExp, callstack);
+        else throw new EvalError("情况参数必须被模拟为Boolean或boolean.", condExp, callstack);
     }
 }
