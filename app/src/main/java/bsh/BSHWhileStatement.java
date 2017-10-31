@@ -42,14 +42,14 @@ class BSHWhileStatement extends SimpleNode implements ParserConstants {
             Object ret = body.eval(callstack, interpreter);
             if (ret instanceof ReturnControl) {
                 switch (((ReturnControl) ret).kind) {
-                    case RETURN:
-                        return ret;
+                case RETURN:
+                    return ret;
 
-                    case CONTINUE:
-                        break;
+                case CONTINUE:
+                    break;
 
-                    case BREAK:
-                        return Primitive.VOID;
+                case BREAK:
+                    return Primitive.VOID;
                 }
             }
         }
