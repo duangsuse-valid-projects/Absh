@@ -1,4 +1,0 @@
-cmd commands/
-cp classpath/
-oo ClassGenerator:ClassGeneratorImpl:ClassGeneratorUtil:org
-ref reflect/
