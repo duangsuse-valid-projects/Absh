@@ -61,7 +61,7 @@ public class XThis extends This
 		int hash = 21;
 		for(int i=0; i<ca.length; i++)
 			hash *= ca[i].hashCode() + 3;
-		Object hashKey = new Integer(hash);
+		Object hashKey = Integer.valueOf(hash);
 
 		Object interf = interfaces.get( hashKey );
 

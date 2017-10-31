@@ -1,0 +1,4 @@
+-dontnote org.apache.http.**
+-dontnote android.net.http.**
+-dontobfuscate
+-optimizationpasses 5
