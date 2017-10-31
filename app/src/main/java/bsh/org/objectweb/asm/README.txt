@@ -1,4 +1,3 @@
-
 These files are part of the org.objectweb.asm distribution version 1.3.6.
 
 ASM is a very light weight, fast, visitor-pattern style Java byte code 

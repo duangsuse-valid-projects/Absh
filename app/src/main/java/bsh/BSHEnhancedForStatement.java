@@ -1,12 +1,10 @@
 package bsh;
 
-
 /**
- * Implementation of the enhanced for(:) statement.
- * This statement uses BshIterable to support iteration over a wide variety
- * of iterable types.  Under JDK 1.1 this statement supports primitive and
- * Object arrays, Vectors, and enumerations.  Under JDK 1.2 and later it
- * additionally supports collections.
+ * Implementation of the enhanced for(:) statement. This statement uses BshIterable to support
+ * iteration over a wide variety of iterable types. Under JDK 1.1 this statement supports primitive
+ * and Object arrays, Vectors, and enumerations. Under JDK 1.2 and later it additionally supports
+ * collections.
  *
  * @author Daniel Leuck
  * @author Pat Niemeyer
@@ -15,11 +13,9 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
 
     String varName;
 
-
     BSHEnhancedForStatement(int id) {
         super(id);
     }
-
 
     public Object eval(CallStack callstack, Interpreter interpreter) throws EvalError {
         Class elementType = null;
@@ -44,7 +40,11 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
         callstack.swap(eachNameSpace);
         final Object iteratee = expression.eval(callstack, interpreter);
         if (iteratee == Primitive.NULL) {
-            throw new EvalError("The collection, array, map, iterator, or " + "enumeration portion of a for statement cannot be null.", this, callstack);
+            throw new EvalError(
+                    "The collection, array, map, iterator, or "
+                            + "enumeration portion of a for statement cannot be null.",
+                    this,
+                    callstack);
         }
         CollectionManager cm = CollectionManager.getCollectionManager();
         if (!cm.isBshIterable(iteratee)) {
@@ -59,7 +59,11 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
                     value = Primitive.NULL;
                 }
                 if (elementType != null) {
-                    eachNameSpace.setTypedVariable(varName/*name*/, elementType/*type*/, value/*value*/, new Modifiers()/*none*/);
+                    eachNameSpace.setTypedVariable(
+                            varName /*name*/,
+                            elementType /*type*/,
+                            value /*value*/,
+                            new Modifiers() /*none*/);
                 } else {
                     eachNameSpace.setVariable(varName, value, false);
                 }
@@ -72,15 +76,15 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
                 Object ret = statement.eval(callstack, interpreter);
                 if (ret instanceof ReturnControl) {
                     switch (((ReturnControl) ret).kind) {
-                    case RETURN:
-                        returnControl = ret;
-                        breakout = true;
-                        break;
-                    case CONTINUE:
-                        break;
-                    case BREAK:
-                        breakout = true;
-                        break;
+                        case RETURN:
+                            returnControl = ret;
+                            breakout = true;
+                            break;
+                        case CONTINUE:
+                            break;
+                        case BREAK:
+                            breakout = true;
+                            break;
                     }
                 }
             }
@@ -91,5 +95,4 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants {
         callstack.swap(enclosingNameSpace);
         return returnControl;
     }
-
 }

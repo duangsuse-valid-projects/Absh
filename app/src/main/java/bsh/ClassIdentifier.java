@@ -3,7 +3,7 @@ package bsh;
 public class ClassIdentifier {
     Class clas;
 
-    public ClassIdentifier( Class clas ) {
+    public ClassIdentifier(Class clas) {
         this.clas = clas;
     }
 
@@ -13,7 +13,6 @@ public class ClassIdentifier {
     }
 
     public String toString() {
-        return "Class Identifier: "+clas.getName();
+        return "Class Identifier: " + clas.getName();
     }
 }
-

@@ -17,19 +17,19 @@ package bsh;
 */
 class SimpleNode implements Node {
     public static SimpleNode JAVACODE =
-    new SimpleNode( -1 ) {
-        public String getSourceFile() {
-            return "<Called from Java Code>";
-        }
+            new SimpleNode(-1) {
+                public String getSourceFile() {
+                    return "<Called from Java Code>";
+                }
 
-        public int getLineNumber() {
-            return -1;
-        }
+                public int getLineNumber() {
+                    return -1;
+                }
 
-        public String getText()  {
-            return "<Compiled Java Code>";
-        }
-    };
+                public String getText() {
+                    return "<Compiled Java Code>";
+                }
+            };
 
     protected Node parent;
     protected Node[] children;
@@ -43,20 +43,21 @@ class SimpleNode implements Node {
         id = i;
     }
 
-    public void jjtOpen() { }
-    public void jjtClose() { }
+    public void jjtOpen() {}
+
+    public void jjtClose() {}
 
     public void jjtSetParent(Node n) {
         parent = n;
     }
+
     public Node jjtGetParent() {
         return parent;
     }
-    //public SimpleNode getParent() { return (SimpleNode)parent; }
+    // public SimpleNode getParent() { return (SimpleNode)parent; }
 
     public void jjtAddChild(Node n, int i) {
-        if (children == null)
-            children = new Node[i + 1];
+        if (children == null) children = new Node[i + 1];
         else if (i >= children.length) {
             Node c[] = new Node[i + 1];
             System.arraycopy(children, 0, c, 0, children.length);
@@ -69,8 +70,9 @@ class SimpleNode implements Node {
     public Node jjtGetChild(int i) {
         return children[i];
     }
-    public SimpleNode getChild( int i ) {
-        return (SimpleNode)jjtGetChild(i);
+
+    public SimpleNode getChild(int i) {
+        return (SimpleNode) jjtGetChild(i);
     }
 
     public int jjtGetNumChildren() {
@@ -87,6 +89,7 @@ class SimpleNode implements Node {
     public String toString() {
         return ParserTreeConstants.jjtNodeName[id];
     }
+
     public String toString(String prefix) {
         return prefix + toString();
     }
@@ -97,9 +100,9 @@ class SimpleNode implements Node {
     */
     public void dump(String prefix) {
         System.out.println(toString(prefix));
-        if(children != null) {
-            for(int i = 0; i < children.length; ++i) {
-                SimpleNode n = (SimpleNode)children[i];
+        if (children != null) {
+            for (int i = 0; i < children.length; ++i) {
+                SimpleNode n = (SimpleNode) children[i];
                 if (n != null) {
                     n.dump(prefix + " ");
                 }
@@ -110,79 +113,59 @@ class SimpleNode implements Node {
     //  ---- BeanShell specific stuff hereafter ----  //
 
     /**
-    	Detach this node from its parent.
-    	This is primarily useful in node serialization.
-    	(see BSHMethodDeclaration)
-    */
+     * Detach this node from its parent. This is primarily useful in node serialization. (see
+     * BSHMethodDeclaration)
+     */
     public void prune() {
-        jjtSetParent( null );
+        jjtSetParent(null);
+    }
+
+    /** This is the general signature for evaluation of a node. */
+    public Object eval(CallStack callstack, Interpreter interpreter) throws EvalError {
+        throw new InterpreterError("Unimplemented or inappropriate for " + getClass().getName());
     }
 
     /**
-    	This is the general signature for evaluation of a node.
-    */
-    public Object eval( CallStack callstack, Interpreter interpreter )
-    throws EvalError {
-        throw new InterpreterError(
-            "Unimplemented or inappropriate for " + getClass().getName() );
-    }
-
-    /**
-    	Set the name of the source file (or more generally source) of
-    	the text from which this node was parsed.
-    */
-    public void setSourceFile( String sourceFile ) {
+     * Set the name of the source file (or more generally source) of the text from which this node
+     * was parsed.
+     */
+    public void setSourceFile(String sourceFile) {
         this.sourceFile = sourceFile;
     }
 
     /**
-    	Get the name of the source file (or more generally source) of
-    	the text from which this node was parsed.
-    	This will recursively search up the chain of parent nodes until
-    	a source is found or return a string indicating that the source
-    	is unknown.
-    */
+     * Get the name of the source file (or more generally source) of the text from which this node
+     * was parsed. This will recursively search up the chain of parent nodes until a source is found
+     * or return a string indicating that the source is unknown.
+     */
     public String getSourceFile() {
-        if ( sourceFile == null )
-            if ( parent != null )
-                return ((SimpleNode)parent).getSourceFile();
-            else
-                return "<unknown file>";
-        else
-            return sourceFile;
+        if (sourceFile == null)
+            if (parent != null) return ((SimpleNode) parent).getSourceFile();
+            else return "<unknown file>";
+        else return sourceFile;
     }
 
-    /**
-    	Get the line number of the starting token
-    */
+    /** Get the line number of the starting token */
     public int getLineNumber() {
         return firstToken.beginLine;
     }
 
     /**
-    	Get the ending line number of the starting token
-    public int getEndLineNumber() {
-    	return lastToken.endLine;
-    }
-    */
+     * Get the ending line number of the starting token public int getEndLineNumber() { return
+     * lastToken.endLine; }
+     */
 
-    /**
-    	Get the text of the tokens comprising this node.
-    */
+    /** Get the text of the tokens comprising this node. */
     public String getText() {
         StringBuffer text = new StringBuffer();
         Token t = firstToken;
-        while ( t!=null ) {
+        while (t != null) {
             text.append(t.image);
-            if ( !t.image.equals(".") )
-                text.append(" ");
-            if ( t==lastToken ||
-                    t.image.equals("{") || t.image.equals(";") )
-                break;
-            t=t.next;
+            if (!t.image.equals(".")) text.append(" ");
+            if (t == lastToken || t.image.equals("{") || t.image.equals(";")) break;
+            t = t.next;
         }
 
         return text.toString();
     }
 }
-

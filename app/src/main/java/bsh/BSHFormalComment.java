@@ -7,5 +7,4 @@ public class BSHFormalComment extends SimpleNode {
     public BSHFormalComment(int id) {
         super(id);
     }
-
 }

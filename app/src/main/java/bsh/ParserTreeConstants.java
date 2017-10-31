@@ -42,7 +42,6 @@ public interface ParserTreeConstants {
     public int JJTTHROWSTATEMENT = 36;
     public int JJTTRYSTATEMENT = 37;
 
-
     public String[] jjtNodeName = {
         "void",
         "ClassDeclaration",
