@@ -10,29 +10,32 @@ import java.io.*;
 import java.lang.reflect.*;
 
 public class MainActivity extends Activity {
+    public final Interpreter bsh = new Interpreter();
+    public final String STACKTRACE_FILE = getFilesDir().toString() + "/stack.txt";
+    public LinearLayout l = new LinearLayout(this);
+    public final EditText t = new EditText(this);
+    public final Button b = new Button(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Interpreter bsh = new Interpreter();
         try {
             bsh.set("ctx", this.getApplicationContext());
             bsh.set("me", this);
             bsh.set("sh", bsh);
             bsh.DEBUG = true;
             bsh.TRACE = true;
-            bsh.redirectOutputToFile(getFilesDir().toString() + "/stack.txt");
+            bsh.redirectOutputToFile(STACKTRACE_FILE);
         } catch (Throwable e) {
             printf(e.getMessage());
             e.printStackTrace();
         }
-        public LinearLayout l = new LinearLayout(this);
-        public final EditText t = new EditText(this);
-        public final Button b = new Button(this);
+        t.setTextSize(13);
+        t.setHint(
+                "put your awesome code here┐(´-｀)┌\nlong press to get methods for returning object");
         l.setOrientation(LinearLayout.VERTICAL);
-        t.setHint("put your awesome code here┐(´-｀)┌\nlong press to inspect returning object");
         l.addView(b);
         l.addView(t);
-        t.setTextSize(13);
         b.setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -58,9 +61,9 @@ public class MainActivity extends Activity {
                     @Override
                     public boolean onLongClick(View v) {
                         FileInputStream f = null;
-                        String s = "()";
+                        String s = "";
                         try {
-                            f = new FileInputStream(getFilesDir().toString() + "/stack.txt");
+                            f = new FileInputStream(STACKTRACE_FILE);
                             s = inputStream2String(f);
                         } catch (Throwable e) {
                             printf(e.getMessage());
@@ -85,18 +88,15 @@ public class MainActivity extends Activity {
                         }
                         if (o == null) return false;
                         Class<?> c = o.getClass();
-                        String[] s = new String[c.getMethods().length + c.getFields().length];
+                        Method[] mhs = c.getMethods();
+                        String[] s = new String[mhs.length];
                         int p = 0;
-                        for (Method m : c.getMethods()) {
+                        for (Method m : mhs) {
                             s[p] = m.toString();
                             p++;
                         }
-                        for (Field f : c.getFields()) {
-                            s[p] = f.toString();
-                            p++;
-                        }
                         new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("BshInfoClass")
+                                .setTitle("Methods of " + c.toString())
                                 .setItems(s, null)
                                 .show();
                         return false;
