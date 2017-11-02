@@ -260,8 +260,7 @@ public class JavaCharStream {
 
                 column += 4;
             } catch (java.io.IOException e) {
-                throw new Error(
-                        "Invalid escape character at line " + line + " column " + column + ".");
+                throw new Error("无效的escape字符于行 " + line + ", 列 " + column + ".");
             }
 
             if (backSlashCnt == 1) return c;

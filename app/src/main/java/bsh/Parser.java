@@ -114,8 +114,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
         Token errortok = token;
         int line = errortok.beginLine, column = errortok.beginColumn;
         String mess = (errortok.kind == 0) ? tokenImage[0] : errortok.image;
-        return new ParseException(
-                "Parse error at line " + line + ", column " + column + " : " + message);
+        return new ParseException("解析错误: 与行 " + line + ", 列 " + column + " : " + message);
     }
 
     /*
@@ -126,7 +125,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
         switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
             case 0:
                 jj_consume_token(0);
-                Interpreter.debug("End of File!");
+                Interpreter.debug("文件结束!");
                 {
                     if (true) return true;
                 }
@@ -143,7 +142,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
                     throw new ParseException();
                 }
         }
-        throw new Error("Missing return statement in function");
+        throw new Error("函数缺少返回语句");
     }
 
     /**
@@ -230,7 +229,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
         {
             if (true) return mods;
         }
-        throw new Error("Missing return statement in function");
+        throw new Error("函数缺少返回语句");
     }
 
     /** */
@@ -1087,7 +1086,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
         {
             if (true) return count;
         }
-        throw new Error("Missing return statement in function");
+        throw new Error("函数缺少返回语句");
     }
 
     /*
@@ -1230,7 +1229,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
         {
             if (true) return t.kind;
         }
-        throw new Error("Missing return statement in function");
+        throw new Error("函数缺少返回语句");
     }
 
     public final void ConditionalExpression() throws ParseException {
@@ -2375,9 +2374,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
                             jjtn000.value = new Primitive(Integer.decode(literal).intValue());
                         } catch (NumberFormatException e) {
                             {
-                                if (true)
-                                    throw createParseException(
-                                            "Error or number too big for integer type: " + literal);
+                                if (true) throw createParseException("错误或数据对整形数太大: " + literal);
                             }
                         }
                     break;
@@ -2407,8 +2404,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
                         jjtn000.charSetup(x.image.substring(1, x.image.length() - 1));
                     } catch (Exception e) {
                         {
-                            if (true)
-                                throw createParseException("Error parsing character: " + x.image);
+                            if (true) throw createParseException("解析字符出错: " + x.image);
                         }
                     }
                     break;
@@ -2421,8 +2417,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
                         jjtn000.stringSetup(x.image.substring(1, x.image.length() - 1));
                     } catch (Exception e) {
                         {
-                            if (true)
-                                throw createParseException("Error parsing string: " + x.image);
+                            if (true) throw createParseException("解析字符串出错: " + x.image);
                         }
                     }
                     break;
@@ -2500,7 +2495,7 @@ public class Parser /*@bgen(jjtree)*/ implements ParserTreeConstants, ParserCons
                 jj_consume_token(-1);
                 throw new ParseException();
         }
-        throw new Error("Missing return statement in function");
+        throw new Error("函数缺少返回语句");
     }
 
     public final void NullLiteral() throws ParseException {

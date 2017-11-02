@@ -101,7 +101,7 @@ class BSHType extends SimpleNode implements BshClassManager.Listener {
                 Object obj = Array.newInstance(baseType, dims);
                 type = obj.getClass();
             } catch (Exception e) {
-                throw new EvalError("Couldn't construct array type", this, callstack);
+                throw new EvalError("无法架构数组类型", this, callstack);
             }
         } else type = baseType;
 

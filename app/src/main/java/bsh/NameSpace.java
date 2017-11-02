@@ -98,8 +98,8 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
 
         if (classStatic != null
         // || ( getParent()!=null && getParent().classStatic != null )
-        ) throw new UtilEvalError("Can't refer to class instance from static context.");
-        else throw new InterpreterError("Can't resolve class instance 'this' in: " + this);
+        ) throw new UtilEvalError("不能从静态上下文中引用类示例.");
+        else throw new InterpreterError("找不到类实例'this': " + this);
     }
 
     /**
@@ -225,7 +225,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
         if (variables == null) variables = new Hashtable();
 
         // primitives should have been wrapped
-        if (value == null) throw new InterpreterError("null variable value");
+        if (value == null) throw new InterpreterError("无效变量类型");
 
         // Locate the variable definition if it exists.
         Variable existing = getVariableImpl(name, recurse);
@@ -235,15 +235,13 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
             try {
                 existing.setValue(value, Variable.ASSIGNMENT);
             } catch (UtilEvalError e) {
-                throw new UtilEvalError("Variable assignment: " + name + ": " + e.getMessage());
+                throw new UtilEvalError("变量声明: " + name + ": " + e.getMessage());
             }
             return existing;
         } else
         // No previous variable definition found here (or above if recurse)
         {
-            if (strictJava)
-                throw new UtilEvalError(
-                        "(Strict Java mode) Assignment to undeclared variable: " + name);
+            if (strictJava) throw new UtilEvalError("(严格Java) 定义到未定义变量: " + name);
 
             // If recurse, set global untyped var, else set it here.
             // NameSpace varScope = recurse ? getGlobal() : this;
@@ -308,7 +306,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
         if (variables == null) variables = new Hashtable();
 
         // primitives should have been wrapped
-        if (value == null) throw new InterpreterError("null variable value");
+        if (value == null) throw new InterpreterError("空的变量");
 
         // Locate the variable definition if it exists.
         Variable existing = getVariableImpl(name, recurse);
@@ -318,14 +316,12 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
             try {
                 existing.setValue(value, Variable.ASSIGNMENT);
             } catch (UtilEvalError e) {
-                throw new UtilEvalError("Variable assignment: " + name + ": " + e.getMessage());
+                throw new UtilEvalError("变量生命: " + name + ": " + e.getMessage());
             }
         } else
         // No previous variable definition found here (or above if recurse)
         {
-            if (strictJava)
-                throw new UtilEvalError(
-                        "(Strict Java mode) Assignment to undeclared variable: " + name);
+            if (strictJava) throw new UtilEvalError("(严格Java) 声明到未定义变量: " + name);
 
             boolean setProp = attemptSetPropertyValue(name, value, null);
             if (setProp) return;
@@ -647,10 +643,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
                 // a different (even if assignable) type.
                 if (existing.getType() != type) {
                     throw new UtilEvalError(
-                            "Typed variable: "
-                                    + name
-                                    + " was previously declared with type: "
-                                    + existing.getType());
+                            "有类型的变量: " + name + " 之前已经以类型 " + existing.getType() + " 被定义了");
                 } else {
                     // else set it and return
                     existing.setValue(value, Variable.DECLARATION);
@@ -824,7 +817,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
      */
     public Object getCommand(String name, Class[] argTypes, Interpreter interpreter)
             throws UtilEvalError {
-        if (Interpreter.DEBUG) Interpreter.debug("getCommand: " + name);
+        if (Interpreter.DEBUG) Interpreter.debug("获取命令: " + name);
         BshClassManager bcm = interpreter.getClassManager();
 
         if (importedCommands != null) {
@@ -836,7 +829,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
                 if (path.equals("/")) scriptPath = path + name + ".bsh";
                 else scriptPath = path + "/" + name + ".bsh";
 
-                Interpreter.debug("searching for script: " + scriptPath);
+                Interpreter.debug("检索脚本: " + scriptPath);
 
                 InputStream in = bcm.getResourceAsStream(scriptPath);
 
@@ -848,7 +841,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
                 if (path.equals("/")) className = name;
                 else className = path.substring(1).replace('/', '.') + "." + name;
 
-                Interpreter.debug("searching for class: " + className);
+                Interpreter.debug("检索类: " + className);
                 Class clas = bcm.classForName(className);
                 if (clas != null) return clas;
             }
@@ -931,7 +924,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
             	execution path.
             */
             Interpreter.debug(e.toString());
-            throw new UtilEvalError("Error loading script: " + e.getMessage());
+            throw new UtilEvalError("加载脚本时出错: " + e.getMessage());
         }
 
         // Look for the loaded command
@@ -1018,7 +1011,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
         }
 
         // Not found
-        if (Interpreter.DEBUG) Interpreter.debug("getClass(): " + name + " not	found in " + this);
+        if (Interpreter.DEBUG) Interpreter.debug("getClass(): " + name + " 在 " + this + " 中找不到");
         return null;
     }
 
@@ -1053,8 +1046,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
                     } catch (ClassNotFoundException e) {
                         /* not a class */
                     }
-                else if (Interpreter.DEBUG)
-                    Interpreter.debug("imported unpackaged name not found:" + fullname);
+                else if (Interpreter.DEBUG) Interpreter.debug("导入的未打包的名称找不到:" + fullname);
 
                 // If found cache the full name in the BshClassManager
                 if (clas != null) {
@@ -1137,12 +1129,12 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
     }
 
     public String toString() {
-        return "NameSpace: "
+        return "命名空间: "
                 + (nsName == null ? super.toString() : nsName + " (" + super.toString() + ")")
-                + (isClass ? " (isClass) " : "")
-                + (isMethod ? " (method) " : "")
-                + (classStatic != null ? " (class static) " : "")
-                + (classInstance != null ? " (class instance) " : "");
+                + (isClass ? " (是类) " : "")
+                + (isMethod ? " (方法) " : "")
+                + (classStatic != null ? " (静态类) " : "")
+                + (classInstance != null ? " (类实例) " : "");
     }
 
     /*
@@ -1278,7 +1270,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
     public String getInvocationText() {
         SimpleNode node = getNode();
         if (node != null) return node.getText();
-        else return "<invoked from Java code>";
+        else return "<从Java代码中被调用>";
     }
 
     /**
@@ -1379,8 +1371,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
                 // m.invoke(new Object[] {value}, interp);
                 return true;
             } catch (EvalError ee) {
-                throw new UtilEvalError(
-                        "'This' property accessor threw exception: " + ee.getMessage());
+                throw new UtilEvalError("'This' 属性访问器抛出了异常: " + ee.getMessage());
             }
         }
 
@@ -1409,7 +1400,7 @@ public class NameSpace implements java.io.Serializable, BshClassManager.Listener
 
             return Primitive.VOID;
         } catch (EvalError ee) {
-            throw new UtilEvalError("'This' property accessor threw exception: " + ee.getMessage());
+            throw new UtilEvalError("'This' 属性访问器抛出了异常: " + ee.getMessage());
         }
     }
 }

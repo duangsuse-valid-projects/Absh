@@ -54,7 +54,7 @@ public class CallStack {
     }
 
     public NameSpace pop() {
-        if (depth() < 1) throw new InterpreterError("pop on empty CallStack");
+        if (depth() < 1) throw new InterpreterError("在空的调用堆上移除");
         NameSpace top = top();
         stack.removeElementAt(0);
         return top;
@@ -79,7 +79,7 @@ public class CallStack {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("CallStack:\n");
+        sb.append("调用堆:\n");
         NameSpace[] nsa = toArray();
         for (int i = 0; i < nsa.length; i++) sb.append("\t" + nsa[i] + "\n");
 

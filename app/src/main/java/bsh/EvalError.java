@@ -31,15 +31,15 @@ public class EvalError extends Exception {
         String trace;
         if (node != null)
             trace =
-                    " : at Line: "
+                    " : 于行: "
                             + node.getLineNumber()
-                            + " : in file: "
+                            + " : 于文件: "
                             + node.getSourceFile()
                             + " : "
                             + node.getText();
         else
             // Users should not normally see this.
-            trace = ": <at unknown location>";
+            trace = ": <未知位置>";
 
         if (callstack != null) trace = trace + "\n" + getScriptStackTrace();
 
@@ -66,7 +66,7 @@ public class EvalError extends Exception {
 
     public String getErrorText() {
         if (node != null) return node.getText();
-        else return "<unknown error>";
+        else return "<未知错误>";
     }
 
     public int getErrorLineNumber() {
@@ -76,11 +76,11 @@ public class EvalError extends Exception {
 
     public String getErrorSourceFile() {
         if (node != null) return node.getSourceFile();
-        else return "<unknown file>";
+        else return "<未知文件>";
     }
 
     public String getScriptStackTrace() {
-        if (callstack == null) return "<Unknown>";
+        if (callstack == null) return "<未知>";
 
         String trace = "";
         CallStack stack = callstack.copy();
@@ -88,12 +88,12 @@ public class EvalError extends Exception {
             NameSpace ns = stack.pop();
             SimpleNode node = ns.getNode();
             if (ns.isMethod) {
-                trace = trace + "\nCalled from method: " + ns.getName();
+                trace = trace + "\n从方法: " + ns.getName() + " 被调用";
                 if (node != null)
                     trace +=
-                            " : at Line: "
+                            " : 于行: "
                                     + node.getLineNumber()
-                                    + " : in file: "
+                                    + " : 于文件: "
                                     + node.getSourceFile()
                                     + " : "
                                     + node.getText();

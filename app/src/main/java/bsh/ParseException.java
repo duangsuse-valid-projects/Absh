@@ -46,7 +46,7 @@ public class ParseException extends EvalError {
 
     // Begin BeanShell Modification - sourceFile
 
-    String sourceFile = "<unknown>";
+    String sourceFile = "<未知>";
 
     /** Used to add source file info to exception */
     public void setErrorSourceFile(String file) {
@@ -160,7 +160,7 @@ public class ParseException extends EvalError {
             expected += eol + "    ";
         }
         // Begin BeanShell Modification - added sourceFile info
-        String retval = "In file: " + sourceFile + " Encountered \"";
+        String retval = "文件: " + sourceFile + " 发生 \"";
         // End BeanShell Modification - added sourceFile info
         Token tok = currentToken.next;
         for (int i = 0; i < maxSize; i++) {
@@ -173,9 +173,9 @@ public class ParseException extends EvalError {
             tok = tok.next;
         }
         retval +=
-                "\" at line "
+                "\" 于行 "
                         + currentToken.next.beginLine
-                        + ", column "
+                        + ", 列 "
                         + currentToken.next.beginColumn
                         + "."
                         + eol;
@@ -183,9 +183,9 @@ public class ParseException extends EvalError {
         // Begin BeanShell Modification - made conditional on debug
         if (debug) {
             if (expectedTokenSequences.length == 1) {
-                retval += "Was expecting:" + eol + "    ";
+                retval += "预期:" + eol + "    ";
             } else {
-                retval += "Was expecting one of:" + eol + "    ";
+                retval += "预期其中之一:" + eol + "    ";
             }
 
             retval += expected;

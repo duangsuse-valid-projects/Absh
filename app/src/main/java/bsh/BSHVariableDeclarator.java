@@ -45,12 +45,12 @@ class BSHVariableDeclarator extends SimpleNode {
             else value = initializer.eval(callstack, interpreter);
         }
 
-        if (value == Primitive.VOID) throw new EvalError("Void initializer.", this, callstack);
+        if (value == Primitive.VOID) throw new EvalError("初始化者是Void.", this, callstack);
 
         return value;
     }
 
     public String toString() {
-        return "BSHVariableDeclarator " + name;
+        return "BSH变量声明者 " + name;
     }
 }

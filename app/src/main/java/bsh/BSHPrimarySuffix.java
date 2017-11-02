@@ -33,11 +33,10 @@ class BSHPrimarySuffix extends SimpleNode {
         // Prefix must be a BSHType
         if (operation == CLASS)
             if (obj instanceof BSHType) {
-                if (toLHS) throw new EvalError("Can't assign .class", this, callstack);
+                if (toLHS) throw new EvalError("不能声明 .class", this, callstack);
                 NameSpace namespace = callstack.top();
                 return ((BSHType) obj).getType(callstack, interpreter);
-            } else
-                throw new EvalError("Attempt to use .class suffix on non class.", this, callstack);
+            } else throw new EvalError("尝试在非类的情况下使用.class后缀.", this, callstack);
 
         /*
         	Evaluate our prefix if it needs evaluating first.
@@ -74,13 +73,12 @@ class BSHPrimarySuffix extends SimpleNode {
                     return doProperty(toLHS, obj, callstack, interpreter);
 
                 default:
-                    throw new InterpreterError("Unknown suffix type");
+                    throw new InterpreterError("未知后缀类型");
             }
         } catch (ReflectError e) {
-            throw new EvalError("reflection error: " + e, this, callstack);
+            throw new EvalError("反射错误: " + e, this, callstack);
         } catch (InvocationTargetException e) {
-            throw new TargetError(
-                    "target exception", e.getTargetException(), this, callstack, true);
+            throw new TargetError("目标抛出异常", e.getTargetException(), this, callstack, true);
         }
     }
 
@@ -93,7 +91,7 @@ class BSHPrimarySuffix extends SimpleNode {
         try {
             // .length on array
             if (field.equals("length") && obj.getClass().isArray())
-                if (toLHS) throw new EvalError("Can't assign array length", this, callstack);
+                if (toLHS) throw new EvalError("不能声明数组长度", this, callstack);
                 else return new Primitive(Array.getLength(obj));
 
             // field access
@@ -113,10 +111,9 @@ class BSHPrimarySuffix extends SimpleNode {
             try {
                 return Reflect.invokeObjectMethod(obj, field, oa, interpreter, callstack, this);
             } catch (ReflectError e) {
-                throw new EvalError(
-                        "Error in method invocation: " + e.getMessage(), this, callstack);
+                throw new EvalError("调用方法时错误: " + e.getMessage(), this, callstack);
             } catch (InvocationTargetException e) {
-                String msg = "Method Invocation " + field;
+                String msg = "方法调用 " + field;
                 Throwable te = e.getTargetException();
 
                 /*
@@ -141,7 +138,7 @@ class BSHPrimarySuffix extends SimpleNode {
     static int getIndexAux(
             Object obj, CallStack callstack, Interpreter interpreter, SimpleNode callerInfo)
             throws EvalError {
-        if (!obj.getClass().isArray()) throw new EvalError("Not an array", callerInfo, callstack);
+        if (!obj.getClass().isArray()) throw new EvalError("不是数组", callerInfo, callstack);
 
         int index;
         try {
@@ -150,9 +147,8 @@ class BSHPrimarySuffix extends SimpleNode {
                 indexVal = Types.castObject(indexVal, Integer.TYPE, Types.ASSIGNMENT);
             index = ((Primitive) indexVal).intValue();
         } catch (UtilEvalError e) {
-            Interpreter.debug("doIndex: " + e);
-            throw e.toEvalError(
-                    "Arrays may only be indexed by integer types.", callerInfo, callstack);
+            Interpreter.debug("索引: " + e);
+            throw e.toEvalError("只有整形数类型能索引数组.", callerInfo, callstack);
         }
 
         return index;
@@ -175,20 +171,13 @@ class BSHPrimarySuffix extends SimpleNode {
     private Object doProperty(
             boolean toLHS, Object obj, CallStack callstack, Interpreter interpreter)
             throws EvalError {
-        if (obj == Primitive.VOID)
-            throw new EvalError(
-                    "Attempt to access property on undefined variable or class name",
-                    this,
-                    callstack);
+        if (obj == Primitive.VOID) throw new EvalError("尝试访问未定义变量或类名的属性", this, callstack);
 
-        if (obj instanceof Primitive)
-            throw new EvalError("Attempt to access property on a primitive", this, callstack);
+        if (obj instanceof Primitive) throw new EvalError("尝试访问原生类型的属性", this, callstack);
 
         Object value = ((SimpleNode) jjtGetChild(0)).eval(callstack, interpreter);
 
-        if (!(value instanceof String))
-            throw new EvalError(
-                    "Property expression must be a String or identifier.", this, callstack);
+        if (!(value instanceof String)) throw new EvalError("属性表达式必须是字符串或者标识符.", this, callstack);
 
         if (toLHS) return new LHS(obj, (String) value);
 
@@ -202,9 +191,9 @@ class BSHPrimarySuffix extends SimpleNode {
         try {
             return Reflect.getObjectProperty(obj, (String) value);
         } catch (UtilEvalError e) {
-            throw e.toEvalError("Property: " + value, this, callstack);
+            throw e.toEvalError("属性: " + value, this, callstack);
         } catch (ReflectError e) {
-            throw new EvalError("No such property: " + value, this, callstack);
+            throw new EvalError("没有属性: " + value, this, callstack);
         }
     }
 }

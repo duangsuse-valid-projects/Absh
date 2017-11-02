@@ -11,7 +11,7 @@ class BSHThrowStatement extends SimpleNode {
         // need to loosen this to any throwable... do we need to handle
         // that in interpreter somewhere?  check first...
         if (!(obj instanceof Exception))
-            throw new EvalError("Expression in 'throw' must be Exception type", this, callstack);
+            throw new EvalError("throw获得的表达式必须是Exception的实例化", this, callstack);
 
         // wrap the exception in a TargetException to propagate it up
         throw new TargetError((Exception) obj, this, callstack);

@@ -25,7 +25,7 @@ class BSHUnaryExpression extends SimpleNode implements ParserConstants {
     }
 
     private Object lhsUnaryOperation(LHS lhs, boolean strictJava) throws UtilEvalError {
-        if (Interpreter.DEBUG) Interpreter.debug("lhsUnaryOperation");
+        if (Interpreter.DEBUG) Interpreter.debug("LHS元操作");
         Object prevalue, postvalue;
         prevalue = lhs.getValue();
         postvalue = unaryOperation(prevalue, kind);
@@ -43,8 +43,7 @@ class BSHUnaryExpression extends SimpleNode implements ParserConstants {
             return primitiveWrapperUnaryOperation(op, kind);
 
         if (!(op instanceof Primitive))
-            throw new UtilEvalError(
-                    "Unary operation " + tokenImage[kind] + " inappropriate for object");
+            throw new UtilEvalError("元操作 " + tokenImage[kind] + " 不适于对象");
 
         return Primitive.unaryOperation((Primitive) op, kind);
     }
@@ -74,6 +73,6 @@ class BSHUnaryExpression extends SimpleNode implements ParserConstants {
             return Float.valueOf(Primitive.floatUnaryOperation((Float) operand, kind));
         else if (operand instanceof Double)
             return Double.valueOf(Primitive.doubleUnaryOperation((Double) operand, kind));
-        else throw new InterpreterError("An error occurred.  Please call technical support.");
+        else throw new InterpreterError("发生了意外错误. 请寻找技术资瓷");
     }
 }

@@ -1897,9 +1897,7 @@ public class ParserTokenManager implements ParserConstants {
     protected char curChar;
 
     public ParserTokenManager(JavaCharStream stream) {
-        if (JavaCharStream.staticFlag)
-            throw new Error(
-                    "ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
+        if (JavaCharStream.staticFlag) throw new Error("错误: 不能以静态CharStream类使用非静态语义分析器.");
         input_stream = stream;
     }
 
@@ -1929,7 +1927,7 @@ public class ParserTokenManager implements ParserConstants {
     public void SwitchTo(int lexState) {
         if (lexState >= 1 || lexState < 0)
             throw new TokenMgrError(
-                    "Error: Ignoring invalid lexical state : " + lexState + ". State unchanged.",
+                    "错误: 无视无效的语义状态 : " + lexState + ". 状态未改变.",
                     TokenMgrError.INVALID_LEXICAL_STATE);
         else curLexState = lexState;
     }

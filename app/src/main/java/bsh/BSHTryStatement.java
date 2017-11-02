@@ -46,7 +46,7 @@ class BSHTryStatement extends SimpleNode {
             ret = tryBlock.eval(callstack, interpreter);
         } catch (TargetError e) {
             target = e;
-            String stackInfo = "Bsh Stack: ";
+            String stackInfo = "Bsh堆: ";
             while (callstack.depth() > callstackDepth) stackInfo += "\t" + callstack.pop() + "\n";
         }
 
@@ -67,7 +67,7 @@ class BSHTryStatement extends SimpleNode {
                 fp.eval(callstack, interpreter);
 
                 if (fp.type == null && interpreter.getStrictJava())
-                    throw new EvalError("(Strict Java) Untyped catch block", this, callstack);
+                    throw new EvalError("(严格Java) 无类型的catch语句块", this, callstack);
 
                 // If the param is typed check assignability
                 if (fp.type != null)
@@ -110,7 +110,7 @@ class BSHTryStatement extends SimpleNode {
                                 fp.name, fp.type, thrown, new Modifiers() /*none*/);
                     }
                 } catch (UtilEvalError e) {
-                    throw new InterpreterError("Unable to set var in catch block namespace.");
+                    throw new InterpreterError("不能在catch语句块的命名空间里定义变量.");
                 }
 
                 // put cbNameSpace on the top of the stack

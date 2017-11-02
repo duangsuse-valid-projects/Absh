@@ -145,7 +145,7 @@ class Name implements java.io.Serializable {
         while (evalName != null)
             obj = consumeNextObjectField(callstack, interpreter, forceClass, false /*autoalloc*/);
 
-        if (obj == null) throw new InterpreterError("null value in toObject()");
+        if (obj == null) throw new InterpreterError("toObject()中有空值");
 
         return obj;
     }
@@ -189,7 +189,7 @@ class Name implements java.io.Serializable {
         */
         String varName = prefix(evalName, 1);
         if ((evalBaseObject == null || evalBaseObject instanceof This) && !forceClass) {
-            if (Interpreter.DEBUG) Interpreter.debug("trying to resolve variable: " + varName);
+            if (Interpreter.DEBUG) Interpreter.debug("尝试解析变量: " + varName);
 
             Object obj;
             // switch namespace and special var visibility
@@ -208,8 +208,7 @@ class Name implements java.io.Serializable {
             if (obj != Primitive.VOID) {
                 // Resolved the variable
                 if (Interpreter.DEBUG)
-                    Interpreter.debug(
-                            "resolved variable: " + varName + " in namespace: " + namespace);
+                    Interpreter.debug("在命名空间 " + namespace + " 里解析到变量: " + varName);
 
                 return completeRound(varName, suffix(evalName), obj);
             }
@@ -220,7 +219,7 @@ class Name implements java.io.Serializable {
         	If we're just starting eval of name try to make it, else fail.
         */
         if (evalBaseObject == null) {
-            if (Interpreter.DEBUG) Interpreter.debug("trying class: " + evalName);
+            if (Interpreter.DEBUG) Interpreter.debug("尝试类: " + evalName);
 
             /*
             	Keep adding parts until we have a class
@@ -240,7 +239,7 @@ class Name implements java.io.Serializable {
                         new ClassIdentifier(clas));
             }
             // not a class (or variable per above)
-            if (Interpreter.DEBUG) Interpreter.debug("not a class, trying var prefix " + evalName);
+            if (Interpreter.DEBUG) Interpreter.debug("不是类, 尝试变量前缀 " + evalName);
         }
 
         // No variable or class found in 'this' type ref.
@@ -266,7 +265,7 @@ class Name implements java.io.Serializable {
         if (evalBaseObject == null) {
             if (!isCompound(evalName)) {
                 return completeRound(evalName, FINISHED, Primitive.VOID);
-            } else throw new UtilEvalError("Class or variable not found: " + evalName);
+            } else throw new UtilEvalError("找不到类或变量: " + evalName);
         }
 
         /*
@@ -281,15 +280,13 @@ class Name implements java.io.Serializable {
         */
 
         if (evalBaseObject == Primitive.NULL) // previous round produced null
-        throw new UtilTargetError(
-                    new NullPointerException("Null Pointer while evaluating: " + value));
+        throw new UtilTargetError(new NullPointerException("模拟 " + value + " 时发生空指针错误"));
 
         if (evalBaseObject == Primitive.VOID) // previous round produced void
-        throw new UtilEvalError("Undefined variable or class name while evaluating: " + value);
+        throw new UtilEvalError("模拟: " + value + " 时未定义变量或类名");
 
         if (evalBaseObject instanceof Primitive)
-            throw new UtilEvalError(
-                    "Can't treat primitive like an object. " + "Error while evaluating: " + value);
+            throw new UtilEvalError("不能将原生类型看作对象. 模拟: " + value);
 
         /*
         	Resolve relative to a class type
@@ -310,21 +307,17 @@ class Name implements java.io.Serializable {
                         return completeRound(field, suffix(evalName), ns.classInstance);
                     ns = ns.getParent();
                 }
-                throw new UtilEvalError("Can't find enclosing 'this' instance of class: " + clas);
+                throw new UtilEvalError("找不到接近'this'的实例化类: " + clas);
             }
 
             Object obj = null;
             // static field?
             try {
                 if (Interpreter.DEBUG)
-                    Interpreter.debug(
-                            "Name call to getStaticFieldValue, class: "
-                                    + clas
-                                    + ", field:"
-                                    + field);
+                    Interpreter.debug("通过名称调用getStaticFieldValue, 类: " + clas + ", 字段:" + field);
                 obj = Reflect.getStaticFieldValue(clas, field);
             } catch (ReflectError e) {
-                if (Interpreter.DEBUG) Interpreter.debug("field reflect error: " + e);
+                if (Interpreter.DEBUG) Interpreter.debug("字段反射失败: " + e);
             }
 
             // inner class?
@@ -334,8 +327,7 @@ class Name implements java.io.Serializable {
                 if (c != null) obj = new ClassIdentifier(c);
             }
 
-            if (obj == null)
-                throw new UtilEvalError("No static field or inner class: " + field + " of " + clas);
+            if (obj == null) throw new UtilEvalError("不是静态字段或内联类: " + clas + "." + field);
 
             return completeRound(field, suffix(evalName), obj);
         }
@@ -344,7 +336,7 @@ class Name implements java.io.Serializable {
         	If we've fallen through here we are no longer resolving to
         	a class type.
         */
-        if (forceClass) throw new UtilEvalError(value + " does not resolve to a class name.");
+        if (forceClass) throw new UtilEvalError(value + " 不被解析到类名.");
 
         /*
         	Some kind of field access?
@@ -368,7 +360,7 @@ class Name implements java.io.Serializable {
         }
 
         // if we get here we have failed
-        throw new UtilEvalError("Cannot access field: " + field + ", on object: " + evalBaseObject);
+        throw new UtilEvalError("无法访问: " + field + ", 于对象: " + evalBaseObject);
     }
 
     /**
@@ -400,8 +392,7 @@ class Name implements java.io.Serializable {
             	.this references to prevent user from skipping to things like
             	super.this.caller
             */
-            if (specialFieldsVisible)
-                throw new UtilEvalError("Redundant to call .this on This type");
+            if (specialFieldsVisible) throw new UtilEvalError("在This类型上调用.this是多余的");
 
             // Allow getThis() to work through BlockNameSpace to the method
             // namespace
@@ -453,17 +444,15 @@ class Name implements java.io.Serializable {
             else if (varName.equals("methods")) obj = thisNameSpace.getMethodNames();
             else if (varName.equals("interpreter"))
                 if (lastEvalName.equals("this")) obj = interpreter;
-                else throw new UtilEvalError("Can only call .interpreter on literal 'this'");
+                else throw new UtilEvalError("只能在字面上的'this'上调用.interpreter");
         }
 
         if (obj == null && specialFieldsVisible && varName.equals("caller")) {
             if (lastEvalName.equals("this") || lastEvalName.equals("caller")) {
                 // get the previous context (see notes for this class)
-                if (callstack == null) throw new InterpreterError("no callstack");
+                if (callstack == null) throw new InterpreterError("没有调用堆");
                 obj = callstack.get(++callstackDepth).getThis(interpreter);
-            } else
-                throw new UtilEvalError(
-                        "Can only call .caller on literal 'this' or literal '.caller'");
+            } else throw new UtilEvalError("只能在字面上的'this'或'.caller'上调用.caller");
 
             // early return
             return obj;
@@ -472,14 +461,14 @@ class Name implements java.io.Serializable {
         if (obj == null && specialFieldsVisible && varName.equals("callstack")) {
             if (lastEvalName.equals("this")) {
                 // get the previous context (see notes for this class)
-                if (callstack == null) throw new InterpreterError("no callstack");
+                if (callstack == null) throw new InterpreterError("无调用堆");
                 obj = callstack;
-            } else throw new UtilEvalError("Can only call .callstack on literal 'this'");
+            } else throw new UtilEvalError("只能在字面上的'this'上调用.callstack");
         }
 
         if (obj == null) obj = thisNameSpace.getVariable(varName, evalBaseObject == null);
 
-        if (obj == null) throw new InterpreterError("null this field ref:" + varName);
+        if (obj == null) throw new InterpreterError("空的this字段引用:" + varName);
 
         return obj;
     }
@@ -533,8 +522,7 @@ class Name implements java.io.Serializable {
             if (obj instanceof ClassIdentifier) clas = ((ClassIdentifier) obj).getTargetClass();
         }
 
-        if (clas == null)
-            throw new ClassNotFoundException("Class: " + value + " not found in namespace");
+        if (clas == null) throw new ClassNotFoundException("类: " + value + " 在命名空间里找不到");
 
         asClass = clas;
         return asClass;
@@ -550,7 +538,7 @@ class Name implements java.io.Serializable {
 
         // Simple (non-compound) variable assignment e.g. x=5;
         if (!isCompound(evalName)) {
-            if (evalName.equals("this")) throw new UtilEvalError("Can't assign to 'this'.");
+            if (evalName.equals("this")) throw new UtilEvalError("不能声明到'this'.");
 
             // Interpreter.debug("Simple var LHS...");
             lhs = new LHS(namespace, evalName, false /*bubble up if allowed*/);
@@ -569,14 +557,14 @@ class Name implements java.io.Serializable {
                                 true /*autoallocthis*/);
             }
         } catch (UtilEvalError e) {
-            throw new UtilEvalError("LHS evaluation: " + e.getMessage());
+            throw new UtilEvalError("LHS 模拟: " + e.getMessage());
         }
 
         // Finished eval and its a class.
         if (evalName == null && obj instanceof ClassIdentifier)
-            throw new UtilEvalError("Can't assign to class: " + value);
+            throw new UtilEvalError("不能声明到类: " + value);
 
-        if (obj == null) throw new UtilEvalError("Error in LHS: " + value);
+        if (obj == null) throw new UtilEvalError("LHS有错误: " + value);
 
         // e.g. this.x=5;  or someThisType.x=5;
         if (obj instanceof This) {
@@ -584,10 +572,9 @@ class Name implements java.io.Serializable {
             if (evalName.equals("namespace")
                     || evalName.equals("variables")
                     || evalName.equals("methods")
-                    || evalName.equals("caller"))
-                throw new UtilEvalError("Can't assign to special variable: " + evalName);
+                    || evalName.equals("caller")) throw new UtilEvalError("不能声明到特殊变量: " + evalName);
 
-            Interpreter.debug("found This reference evaluating LHS");
+            Interpreter.debug("在模拟的LHS中找到This引用");
             /*
             	If this was a literal "super" reference then we allow recursion
             	in setting the variable to get the normal effect of finding the
@@ -613,11 +600,11 @@ class Name implements java.io.Serializable {
                     return lhs;
                 }
             } catch (ReflectError e) {
-                throw new UtilEvalError("Field access: " + e);
+                throw new UtilEvalError("字段访问: " + e);
             }
         }
 
-        throw new InterpreterError("Internal error in lhs...");
+        throw new InterpreterError("lhs内部错误...");
     }
 
     /**
@@ -686,11 +673,7 @@ class Name implements java.io.Serializable {
         Object obj = targetName.toObject(callstack, interpreter);
 
         if (obj == Primitive.VOID)
-            throw new UtilEvalError(
-                    "Attempt to resolve method: "
-                            + methodName
-                            + "() on undefined variable or class name: "
-                            + targetName);
+            throw new UtilEvalError("尝试解析方法: " + methodName + "() 在未定义变量或类型名上: " + targetName);
 
         // if we've got an object, resolve the method
         if (!(obj instanceof ClassIdentifier)) {
@@ -698,17 +681,14 @@ class Name implements java.io.Serializable {
             if (obj instanceof Primitive) {
 
                 if (obj == Primitive.NULL)
-                    throw new UtilTargetError(
-                            new NullPointerException("Null Pointer in Method Invocation"));
+                    throw new UtilTargetError(new NullPointerException("方法调用时发生空指针错误"));
 
                 // some other primitive
                 // should avoid calling methods on primitive, as we do
                 // in Name (can't treat primitive like an object message)
                 // but the hole is useful right now.
                 if (Interpreter.DEBUG)
-                    interpreter.debug(
-                            "Attempt to access method on primitive..."
-                                    + " allowing bsh.Primitive to peek through for debugging");
+                    interpreter.debug("尝试在原生类型上访问方法..." + " 允许bsh.Primitive来调试透明");
             }
 
             // found an object and it's not an undefined variable
@@ -719,7 +699,7 @@ class Name implements java.io.Serializable {
         // It's a class
 
         // try static method
-        if (Interpreter.DEBUG) Interpreter.debug("invokeMethod: trying static - " + targetName);
+        if (Interpreter.DEBUG) Interpreter.debug("调用方法: 尝试静态 - " + targetName);
 
         Class clas = ((ClassIdentifier) obj).getTargetClass();
 
@@ -729,7 +709,7 @@ class Name implements java.io.Serializable {
         if (clas != null) return Reflect.invokeStaticMethod(bcm, clas, methodName, args);
 
         // return null; ???
-        throw new UtilEvalError("invokeMethod: unknown target: " + targetName);
+        throw new UtilEvalError("调用方法: 未知目标: " + targetName);
     }
 
     /**
@@ -746,9 +726,8 @@ class Name implements java.io.Serializable {
             Interpreter interpreter, Object[] args, CallStack callstack, SimpleNode callerInfo)
             throws EvalError {
         /*, ReflectError, InvocationTargetException*/
-        if (Interpreter.DEBUG) Interpreter.debug("invokeLocalMethod: " + value);
-        if (interpreter == null)
-            throw new InterpreterError("invokeLocalMethod: interpreter = null");
+        if (Interpreter.DEBUG) Interpreter.debug("调用本地方法: " + value);
+        if (interpreter == null) throw new InterpreterError("调用本地方法: interpreter = null");
 
         String commandName = value;
         Class[] argTypes = Types.getTypes(args);
@@ -758,7 +737,7 @@ class Name implements java.io.Serializable {
         try {
             meth = namespace.getMethod(commandName, argTypes);
         } catch (UtilEvalError e) {
-            throw e.toEvalError("Local method invocation", callerInfo, callstack);
+            throw e.toEvalError("本地方法调用", callerInfo, callstack);
         }
 
         // If defined, invoke it
@@ -772,7 +751,7 @@ class Name implements java.io.Serializable {
         try {
             commandObject = namespace.getCommand(commandName, argTypes, interpreter);
         } catch (UtilEvalError e) {
-            throw e.toEvalError("Error loading command: ", callerInfo, callstack);
+            throw e.toEvalError("加载命令失败: ", callerInfo, callstack);
         }
 
         // should try to print usage here if nothing found
@@ -784,7 +763,7 @@ class Name implements java.io.Serializable {
             try {
                 invokeMethod = namespace.getMethod("invoke", new Class[] {null, null});
             } catch (UtilEvalError e) {
-                throw e.toEvalError("Local method invocation", callerInfo, callstack);
+                throw e.toEvalError("本地方法调用", callerInfo, callstack);
             }
 
             if (invokeMethod != null)
@@ -792,7 +771,7 @@ class Name implements java.io.Serializable {
                         new Object[] {commandName, args}, interpreter, callstack, callerInfo);
 
             throw new EvalError(
-                    "Command not found: " + StringUtil.methodString(commandName, argTypes),
+                    "找不到命令: " + StringUtil.methodString(commandName, argTypes),
                     callerInfo,
                     callstack);
         }
@@ -805,10 +784,10 @@ class Name implements java.io.Serializable {
                 return Reflect.invokeCompiledCommand(
                         ((Class) commandObject), args, interpreter, callstack);
             } catch (UtilEvalError e) {
-                throw e.toEvalError("Error invoking compiled command: ", callerInfo, callstack);
+                throw e.toEvalError("调用已编译命令时错误: ", callerInfo, callstack);
             }
 
-        throw new InterpreterError("invalid command type");
+        throw new InterpreterError("命令类型无效");
     }
 
     /*

@@ -42,14 +42,13 @@ public class Capabilities {
         }
 
         if (!classExists("java.lang.reflect.AccessibleObject")
-                || !classExists("bsh.reflect.ReflectManagerImpl"))
-            throw new Unavailable("Accessibility unavailable");
+                || !classExists("bsh.reflect.ReflectManagerImpl")) throw new Unavailable("访问性不可用");
 
         // test basic access
         try {
             String.class.getDeclaredMethods();
         } catch (SecurityException e) {
-            throw new Unavailable("Accessibility unavailable: " + e);
+            throw new Unavailable("访问性不可用: " + e);
         }
 
         accessibility = true;

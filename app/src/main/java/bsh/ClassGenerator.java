@@ -12,7 +12,7 @@ public abstract class ClassGenerator {
                 Class clas = Class.forName("bsh.ClassGeneratorImpl");
                 cg = (ClassGenerator) clas.newInstance();
             } catch (Exception e) {
-                throw new Unavailable("ClassGenerator unavailable: " + e);
+                throw new Unavailable("类生成器不可用: " + e);
             }
         }
 

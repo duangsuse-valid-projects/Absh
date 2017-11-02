@@ -22,7 +22,7 @@ public class CollectionManager {
                 clas = Class.forName("bsh.collection.CollectionManagerImpl");
                 manager = (CollectionManager) clas.newInstance();
             } catch (Exception e) {
-                Interpreter.debug("unable to load CollectionManagerImpl: " + e);
+                Interpreter.debug("无法加载CollectionManagerImpl: " + e);
             }
         }
 
@@ -90,9 +90,7 @@ public class CollectionManager {
          */
         protected Enumeration createEnumeration(Object iterateOverMe) {
             if (iterateOverMe == null)
-                throw new NullPointerException(
-                        "Object arguments passed to "
-                                + "the BasicBshIterator constructor cannot be null.");
+                throw new NullPointerException("BasicBshIterator架构器的对象参数不能是空值.");
 
             if (iterateOverMe instanceof Enumeration) return (Enumeration) iterateOverMe;
 
@@ -119,8 +117,7 @@ public class CollectionManager {
             if (iterateOverMe instanceof StringBuffer)
                 return createEnumeration(iterateOverMe.toString().toCharArray());
 
-            throw new IllegalArgumentException(
-                    "Cannot enumerate object of type " + iterateOverMe.getClass());
+            throw new IllegalArgumentException("不能枚举 " + iterateOverMe.getClass() + " 类型的对象");
         }
 
         /**

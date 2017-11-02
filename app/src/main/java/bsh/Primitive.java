@@ -87,13 +87,12 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
 
     // private to prevent invocation with param that isn't a primitive-wrapper
     public Primitive(Object value) {
-        if (value == null)
-            throw new InterpreterError("Use Primitve.NULL instead of Primitive(null)");
+        if (value == null) throw new InterpreterError("请使用Primitve.NULL");
 
         if (value != Special.NULL_VALUE
                 && value != Special.VOID_TYPE
                 && !isWrapperType(value.getClass()))
-            throw new InterpreterError("Not a wrapper type: " + value.getClass());
+            throw new InterpreterError("不是包装类型: " + value.getClass());
 
         this.value = value;
     }
@@ -133,8 +132,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
     /** Return the primitive value stored in its java.lang wrapper class */
     public Object getValue() {
         if (value == Special.NULL_VALUE) return null;
-        else if (value == Special.VOID_TYPE)
-            throw new InterpreterError("attempt to unwrap void type");
+        else if (value == Special.VOID_TYPE) throw new InterpreterError("尝试解包void类型");
         else return value;
     }
 
@@ -188,16 +186,13 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
 
         if (lhs.getClass() != rhs.getClass())
             throw new UtilEvalError(
-                    "Type mismatch in operator.  "
-                            + lhs.getClass()
-                            + " cannot be used with "
-                            + rhs.getClass());
+                    "操作符中类型不匹配.  " + lhs.getClass() + " 不能和 " + rhs.getClass() + " 一起使用");
 
         Object result;
         try {
             result = binaryOperationImpl(lhs, rhs, kind);
         } catch (ArithmeticException e) {
-            throw new UtilTargetError("Arithemetic Exception in binary op", e);
+            throw new UtilTargetError("二进制操作符算法错误", e);
         }
 
         if (result instanceof Boolean)
@@ -219,7 +214,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
         else if (lhs instanceof Float) return floatBinaryOperation((Float) lhs, (Float) rhs, kind);
         else if (lhs instanceof Double)
             return doubleBinaryOperation((Double) lhs, (Double) rhs, kind);
-        else throw new UtilEvalError("Invalid types in binary operator");
+        else throw new UtilEvalError("二进制操作符无效类型");
     }
 
     static Boolean booleanBinaryOperation(Boolean B1, Boolean B2, int kind) {
@@ -253,7 +248,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
                 return lhs ^ rhs ? Boolean.TRUE : Boolean.FALSE;
 
             default:
-                throw new InterpreterError("unimplemented binary operator");
+                throw new InterpreterError("二进制操作符未实现");
         }
     }
 
@@ -327,7 +322,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
                 return Long.valueOf(lhs ^ rhs);
 
             default:
-                throw new InterpreterError("Unimplemented binary long operator");
+                throw new InterpreterError("二进制长操作符未实现");
         }
     }
 
@@ -401,7 +396,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
                 return Integer.valueOf(lhs ^ rhs);
 
             default:
-                throw new InterpreterError("Unimplemented binary integer operator");
+                throw new InterpreterError("二进制整形操作符未实现");
         }
     }
 
@@ -457,10 +452,10 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             case RSIGNEDSHIFTX:
             case RUNSIGNEDSHIFT:
             case RUNSIGNEDSHIFTX:
-                throw new UtilEvalError("Can't shift doubles");
+                throw new UtilEvalError("不能交换双精");
 
             default:
-                throw new InterpreterError("Unimplemented binary double operator");
+                throw new InterpreterError("双精二进制操作符未实现");
         }
     }
     // returns Object covering both Long and Boolean return types
@@ -515,10 +510,10 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             case RSIGNEDSHIFTX:
             case RUNSIGNEDSHIFT:
             case RUNSIGNEDSHIFTX:
-                throw new UtilEvalError("Can't shift floats ");
+                throw new UtilEvalError("不能交换浮点");
 
             default:
-                throw new InterpreterError("Unimplemented binary float operator");
+                throw new InterpreterError("二进制浮点操作符未实现");
         }
     }
 
@@ -560,9 +555,8 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
     }
 
     public static Primitive unaryOperation(Primitive val, int kind) throws UtilEvalError {
-        if (val == NULL) throw new UtilEvalError("illegal use of null object or 'null' literal");
-        if (val == VOID)
-            throw new UtilEvalError("illegal use of undefined object or 'void' literal");
+        if (val == NULL) throw new UtilEvalError("null字面或null对象非法使用");
+        if (val == VOID) throw new UtilEvalError("未定义对象或void关键字非法使用");
 
         Class operandType = val.getType();
         Object operand = promoteToInteger(val.getValue());
@@ -588,7 +582,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             return new Primitive(floatUnaryOperation((Float) operand, kind));
         else if (operand instanceof Double)
             return new Primitive(doubleUnaryOperation((Double) operand, kind));
-        else throw new InterpreterError("An error occurred.  Please call technical support.");
+        else throw new InterpreterError("发生错误, 请寻找技术支辞");
     }
 
     static boolean booleanUnaryOperation(Boolean B, int kind) throws UtilEvalError {
@@ -597,7 +591,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             case BANG:
                 return !operand;
             default:
-                throw new UtilEvalError("Operator inappropriate for boolean");
+                throw new UtilEvalError("操作符不适合布尔值");
         }
     }
 
@@ -616,7 +610,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             case DECR:
                 return operand - 1;
             default:
-                throw new InterpreterError("bad integer unaryOperation");
+                throw new InterpreterError("错误的整形元操作");
         }
     }
 
@@ -635,7 +629,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             case DECR:
                 return operand - 1;
             default:
-                throw new InterpreterError("bad long unaryOperation");
+                throw new InterpreterError("错误的长元操作");
         }
     }
 
@@ -648,7 +642,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             case MINUS:
                 return -operand;
             default:
-                throw new InterpreterError("bad float unaryOperation");
+                throw new InterpreterError("错误的浮点元操作");
         }
     }
 
@@ -661,18 +655,18 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             case MINUS:
                 return -operand;
             default:
-                throw new InterpreterError("bad double unaryOperation");
+                throw new InterpreterError("错误的双精元操作");
         }
     }
 
     public int intValue() throws UtilEvalError {
         if (value instanceof Number) return ((Number) value).intValue();
-        else throw new UtilEvalError("Primitive not a number");
+        else throw new UtilEvalError("原型不是数");
     }
 
     public boolean booleanValue() throws UtilEvalError {
         if (value instanceof Boolean) return ((Boolean) value).booleanValue();
-        else throw new UtilEvalError("Primitive not a boolean");
+        else throw new UtilEvalError("原型不是布尔");
     }
 
     /**
@@ -690,7 +684,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
         if (value instanceof Character) value = Integer.valueOf(((Character) value).charValue());
 
         if (value instanceof Number) return (Number) value;
-        else throw new UtilEvalError("Primitive not a number");
+        else throw new UtilEvalError("原型不是数");
     }
 
     /** Primitives compare equal with other Primitives containing an equal wrapped value. */
@@ -774,7 +768,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
         try {
             return new Primitive((int) 0).castToType(type, Types.CAST);
         } catch (UtilEvalError e) {
-            throw new InterpreterError("bad cast");
+            throw new InterpreterError("投射错误");
         }
     }
 
@@ -785,7 +779,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
     public static Class boxType(Class primitiveType) {
         Class c = (Class) wrapperMap.get(primitiveType);
         if (c != null) return c;
-        throw new InterpreterError("Not a primitive type: " + primitiveType);
+        throw new InterpreterError("非原型: " + primitiveType);
     }
 
     /**
@@ -795,7 +789,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
     public static Class unboxType(Class wrapperType) {
         Class c = (Class) wrapperMap.get(wrapperType);
         if (c != null) return c;
-        throw new InterpreterError("Not a primitive wrapper type: " + wrapperType);
+        throw new InterpreterError("非原包装类型: " + wrapperType);
     }
 
     /**
@@ -835,19 +829,18 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
         	Once things are running smoothly we might comment these out
         	(That's what assertions are for).
         */
-        if (checkOnly && fromValue != null) throw new InterpreterError("bad cast param 1");
-        if (!checkOnly && fromValue == null) throw new InterpreterError("bad cast param 2");
+        if (checkOnly && fromValue != null) throw new InterpreterError("参数1坏投射");
+        if (!checkOnly && fromValue == null) throw new InterpreterError("参数2坏投射");
         if (fromType != null && !fromType.isPrimitive())
-            throw new InterpreterError("bad fromType:" + fromType);
-        if (fromValue == Primitive.NULL && fromType != null)
-            throw new InterpreterError("inconsistent args 1");
+            throw new InterpreterError("进入类型错误:" + fromType);
+        if (fromValue == Primitive.NULL && fromType != null) throw new InterpreterError("不一致的参数1");
         if (fromValue == Primitive.VOID && fromType != Void.TYPE)
-            throw new InterpreterError("inconsistent args 2");
+            throw new InterpreterError("不一致的参数2");
 
         // can't cast void to anything
         if (fromType == Void.TYPE)
             if (checkOnly) return Types.INVALID_CAST;
-            else throw Types.castError(Reflect.normalizeClassName(toType), "void value", operation);
+            else throw Types.castError(Reflect.normalizeClassName(toType), "void值", operation);
 
         // unwrap Primitive fromValue to its wrapper value, etc.
         Object value = null;
@@ -857,7 +850,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             // Trying to cast null to primitive type?
             if (fromType == null)
                 if (checkOnly) return Types.INVALID_CAST;
-                else throw Types.castError("primitive type:" + toType, "Null value", operation);
+                else throw Types.castError("原型:" + toType, "空值", operation);
 
             // fall through
         } else {
@@ -866,7 +859,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
             if (fromType == null) return checkOnly ? Types.VALID_CAST : Primitive.NULL;
 
             if (checkOnly) return Types.INVALID_CAST;
-            else throw Types.castError("object type:" + toType, "primitive value", operation);
+            else throw Types.castError("对象类型:" + toType, "原型", operation);
         }
 
         // can only cast boolean to boolean
@@ -901,18 +894,17 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
      * @param value is the value in java.lang wrapper. value may not be null.
      */
     static Object castWrapper(Class toType, Object value) {
-        if (!toType.isPrimitive())
-            throw new InterpreterError("invalid type in castWrapper: " + toType);
-        if (value == null) throw new InterpreterError("null value in castWrapper, guard");
+        if (!toType.isPrimitive()) throw new InterpreterError("castWrapper中有无效类型: " + toType);
+        if (value == null) throw new InterpreterError("castWrapper包含空型, 守住");
         if (value instanceof Boolean) {
-            if (toType != Boolean.TYPE) throw new InterpreterError("bad wrapper cast of boolean");
+            if (toType != Boolean.TYPE) throw new InterpreterError("布尔包装投射是坏的");
             else return value;
         }
 
         // first promote char to Number type to avoid duplicating code
         if (value instanceof Character) value = Integer.valueOf(((Character) value).charValue());
 
-        if (!(value instanceof Number)) throw new InterpreterError("bad type in cast");
+        if (!(value instanceof Number)) throw new InterpreterError("投射类型是坏的");
 
         Number number = (Number) value;
 
@@ -924,6 +916,6 @@ public final class Primitive implements ParserConstants, java.io.Serializable {
         if (toType == Float.TYPE) return Float.valueOf(number.floatValue());
         if (toType == Double.TYPE) return Double.valueOf(number.doubleValue());
 
-        throw new InterpreterError("error in wrapper cast");
+        throw new InterpreterError("包装投射错误");
     }
 }

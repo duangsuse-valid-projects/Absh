@@ -22,7 +22,7 @@ class BSHSwitchStatement extends SimpleNode implements ParserConstants {
         ReturnControl returnControl = null;
 
         // get the first label
-        if (child >= numchild) throw new EvalError("Empty switch statement.", this, callstack);
+        if (child >= numchild) throw new EvalError("空的switch语句.", this, callstack);
         label = ((BSHSwitchLabel) jjtGetChild(child++));
 
         // while more labels or blocks and haven't hit return control
@@ -74,7 +74,7 @@ class BSHSwitchStatement extends SimpleNode implements ParserConstants {
                 result = Primitive.unwrap(result);
                 return result.equals(Boolean.TRUE);
             } catch (UtilEvalError e) {
-                throw e.toEvalError("Switch value: " + switchExp.getText() + ": ", this, callstack);
+                throw e.toEvalError("Switch值: " + switchExp.getText() + ": ", this, callstack);
             }
         else return switchVal.equals(targetVal);
     }

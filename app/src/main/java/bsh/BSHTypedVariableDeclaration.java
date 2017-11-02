@@ -48,7 +48,7 @@ class BSHTypedVariableDeclaration extends SimpleNode {
                 }
             }
         } catch (EvalError e) {
-            e.reThrow("Typed variable declaration");
+            e.reThrow("钦定类型的变量声明");
         }
 
         return Primitive.VOID;

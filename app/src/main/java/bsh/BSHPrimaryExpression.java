@@ -14,7 +14,7 @@ class BSHPrimaryExpression extends SimpleNode {
     public LHS toLHS(CallStack callstack, Interpreter interpreter) throws EvalError {
         Object obj = eval(true, callstack, interpreter);
 
-        if (!(obj instanceof LHS)) throw new EvalError("Can't assign to:", this, callstack);
+        if (!(obj instanceof LHS)) throw new EvalError("不能声明到:", this, callstack);
         else return (LHS) obj;
     }
 
@@ -46,7 +46,7 @@ class BSHPrimaryExpression extends SimpleNode {
             // Some arbitrary kind of node
             if (toLHS)
                 // is this right?
-                throw new EvalError("Can't assign to prefix.", this, callstack);
+                throw new EvalError("不能声明到前缀.", this, callstack);
             else obj = ((SimpleNode) obj).eval(callstack, interpreter);
 
         // return LHS or value object as determined by toLHS

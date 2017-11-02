@@ -15,15 +15,13 @@ public class Modifiers implements java.io.Serializable {
         if (modifiers == null) modifiers = new Hashtable();
 
         Object existing = modifiers.put(name, Void.TYPE /*arbitrary flag*/);
-        if (existing != null) throw new IllegalStateException("Duplicate modifier: " + name);
+        if (existing != null) throw new IllegalStateException("修改器重叠: " + name);
 
         int count = 0;
         if (hasModifier("private")) ++count;
         if (hasModifier("protected")) ++count;
         if (hasModifier("public")) ++count;
-        if (count > 1)
-            throw new IllegalStateException(
-                    "public/private/protected cannot be used in combination.");
+        if (count > 1) throw new IllegalStateException("public/private/protected 不能混合使用.");
 
         switch (context) {
             case CLASS:
@@ -63,10 +61,10 @@ public class Modifiers implements java.io.Serializable {
 
     private void insureNo(String modifier, String context) {
         if (hasModifier(modifier))
-            throw new IllegalStateException(context + " cannot be declared '" + modifier + "'");
+            throw new IllegalStateException(context + " 不能声明 '" + modifier + "'");
     }
 
     public String toString() {
-        return "Modifiers: " + modifiers;
+        return "修改器: " + modifiers;
     }
 }

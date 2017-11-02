@@ -13,6 +13,6 @@ public class ClassIdentifier {
     }
 
     public String toString() {
-        return "Class Identifier: " + clas.getName();
+        return "类标识符: " + clas.getName();
     }
 }

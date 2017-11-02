@@ -52,7 +52,7 @@ class LHS implements ParserConstants, java.io.Serializable {
 
     /** Object field LHS Constructor. */
     LHS(Object object, Field field) {
-        if (object == null) throw new NullPointerException("constructed empty LHS");
+        if (object == null) throw new NullPointerException("架构空的LHS");
 
         type = FIELD;
         this.object = object;
@@ -61,7 +61,7 @@ class LHS implements ParserConstants, java.io.Serializable {
 
     /** Object property LHS Constructor. */
     LHS(Object object, String propName) {
-        if (object == null) throw new NullPointerException("constructed empty LHS");
+        if (object == null) throw new NullPointerException("架构空的LHS");
 
         type = PROPERTY;
         this.object = object;
@@ -70,7 +70,7 @@ class LHS implements ParserConstants, java.io.Serializable {
 
     /** Array index LHS Constructor. */
     LHS(Object array, int index) {
-        if (array == null) throw new NullPointerException("constructed empty LHS");
+        if (array == null) throw new NullPointerException("架构空的LHS");
 
         type = INDEX;
         this.object = array;
@@ -86,7 +86,7 @@ class LHS implements ParserConstants, java.io.Serializable {
                 Object o = field.get(object);
                 return Primitive.wrap(o, field.getType());
             } catch (IllegalAccessException e2) {
-                throw new UtilEvalError("Can't read field: " + field);
+                throw new UtilEvalError("不能读字段: " + field);
             }
 
         if (type == PROPERTY) {
@@ -99,7 +99,7 @@ class LHS implements ParserConstants, java.io.Serializable {
                     return Reflect.getObjectProperty(object, propName);
                 } catch (ReflectError e) {
                     Interpreter.debug(e.getMessage());
-                    throw new UtilEvalError("No such property: " + propName);
+                    throw new UtilEvalError("无属性: " + propName);
                 }
         }
 
@@ -107,10 +107,10 @@ class LHS implements ParserConstants, java.io.Serializable {
             try {
                 return Reflect.getIndex(object, index);
             } catch (Exception e) {
-                throw new UtilEvalError("Array access: " + e);
+                throw new UtilEvalError("数组访问: " + e);
             }
 
-        throw new InterpreterError("LHS type");
+        throw new InterpreterError("LHS类型");
     }
 
     /** Assign a value to the LHS. */
@@ -126,19 +126,16 @@ class LHS implements ParserConstants, java.io.Serializable {
                 field.set(object, Primitive.unwrap(val));
                 return val;
             } catch (NullPointerException e) {
-                throw new UtilEvalError("LHS (" + field.getName() + ") not a static field.");
+                throw new UtilEvalError("LHS (" + field.getName() + ") 非静态字段.");
             } catch (IllegalAccessException e2) {
-                throw new UtilEvalError("LHS (" + field.getName() + ") can't access field: " + e2);
+                throw new UtilEvalError("LHS (" + field.getName() + ") 不能访问字段: " + e2);
             } catch (IllegalArgumentException e3) {
                 String type =
                         val instanceof Primitive
                                 ? ((Primitive) val).getType().getName()
                                 : val.getClass().getName();
                 throw new UtilEvalError(
-                        "Argument type mismatch. "
-                                + (val == null ? "null" : type)
-                                + " not assignable to field "
-                                + field.getName());
+                        "参数类型不对. " + (val == null ? "null" : type) + " 不能声明到字段 " + field.getName());
             }
         } else if (type == PROPERTY) {
             CollectionManager cm = CollectionManager.getCollectionManager();
@@ -147,8 +144,8 @@ class LHS implements ParserConstants, java.io.Serializable {
                 try {
                     Reflect.setObjectProperty(object, propName, val);
                 } catch (ReflectError e) {
-                    Interpreter.debug("Assignment: " + e.getMessage());
-                    throw new UtilEvalError("No such property: " + propName);
+                    Interpreter.debug("声明: " + e.getMessage());
+                    throw new UtilEvalError("无相应属性: " + propName);
                 }
         } else if (type == INDEX)
             try {
@@ -156,17 +153,17 @@ class LHS implements ParserConstants, java.io.Serializable {
             } catch (UtilTargetError e1) { // pass along target error
                 throw e1;
             } catch (Exception e) {
-                throw new UtilEvalError("Assignment: " + e.getMessage());
+                throw new UtilEvalError("声明: " + e.getMessage());
             }
-        else throw new InterpreterError("unknown lhs");
+        else throw new InterpreterError("未知的lhs");
 
         return val;
     }
 
     public String toString() {
         return "LHS: "
-                + ((field != null) ? "field = " + field.toString() : "")
-                + (varName != null ? " varName = " + varName : "")
-                + (nameSpace != null ? " nameSpace = " + nameSpace.toString() : "");
+                + ((field != null) ? "字段 = " + field.toString() : "")
+                + (varName != null ? " 变量名 = " + varName : "")
+                + (nameSpace != null ? " 命名空间 = " + nameSpace.toString() : "");
     }
 }
